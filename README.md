@@ -1,6 +1,4 @@
-# Verve e-commerce
 
-PHP and MySQL storefront with a separate admin panel. Prices display in Kenyan shillings (KSh).
 
 ## Run locally with XAMPP
 
