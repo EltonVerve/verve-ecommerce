@@ -5,9 +5,7 @@ shop needs: a browsable catalogue with filters, product variants (size/colour/et
 cart, checkout, order history, wishlist, product reviews, coupon codes, and a full admin
 panel for managing products, categories, orders and customer messages.
 
-This was built as a from-scratch redesign of a print-shop ordering system into a normal
-retail store — different data model, different UI, same emphasis on clean, readable,
-well-commented code that's meant to be learned from and extended.
+
 
 ## Requirements
 
