@@ -1,0 +1,38 @@
+[
+    {
+        "Path":  "C:\\xampp\\htdocs\\verve-ecommerce\\verve\\public\\assets\\products\\headphones.png",
+        "Hash":  "ED856575943272F24DF5986CCDDDC2B45609C70768B3590512941B92FA7C4306"
+    },
+    {
+        "Path":  "C:\\xampp\\htdocs\\verve-ecommerce\\verve\\public\\assets\\products\\smartwatch.png",
+        "Hash":  "41E4113C1134058A01FF7DD0CB6E779CFF5198BA44E55D0F4402DAFF207005EF"
+    },
+    {
+        "Path":  "C:\\xampp\\htdocs\\verve-ecommerce\\verve\\public\\assets\\products\\speaker.png",
+        "Hash":  "E977198DBB77F1A2953A09FE02FA83A67E195E00E9FDB0F8A4D59980009C0CC5"
+    },
+    {
+        "Path":  "C:\\xampp\\htdocs\\verve-ecommerce\\verve\\public\\assets\\products\\denim-jacket.png",
+        "Hash":  "03044AE1AB1FDEB8B0E0DCD7AE4DE4A2C21CF7C194CC2A617E7E490F871CBAB1"
+    },
+    {
+        "Path":  "C:\\xampp\\htdocs\\verve-ecommerce\\verve\\public\\assets\\products\\sneakers.png",
+        "Hash":  "68F3962EE0E11DE294DC0343F25F913710CF88D66FDC4E8C684333A53F877B05"
+    },
+    {
+        "Path":  "C:\\xampp\\htdocs\\verve-ecommerce\\verve\\public\\assets\\products\\coffee-set.png",
+        "Hash":  "E72F597E2FFF09B24E57ACEA79C01F7CD0AB67D36854A0D677555AA679AB3643"
+    },
+    {
+        "Path":  "C:\\xampp\\htdocs\\verve-ecommerce\\verve\\public\\assets\\products\\pillow-cover.png",
+        "Hash":  "E116E1B95F42BA7A7A4F25F90D73A764FF2CFDB646FDE8063DC34FA97195DC0E"
+    },
+    {
+        "Path":  "C:\\xampp\\htdocs\\verve-ecommerce\\verve\\public\\assets\\products\\serum.png",
+        "Hash":  "F24E092B8A53F22B99D3EA5F0AFE108F8871433795BDE2673B2696C27DADB82F"
+    },
+    {
+        "Path":  "C:\\xampp\\htdocs\\verve-ecommerce\\verve\\public\\assets\\products\\yoga-mat.png",
+        "Hash":  "7028BCA0675A837D25C7FF292DA34BB2D976F948C8194A54235C7CC154AB3878"
+    }
+]

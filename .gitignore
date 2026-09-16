@@ -1,0 +1,17 @@
+# Local credentials (copy the example when setting up a checkout)
+/verve/config/database.php
+.env
+.env.*
+!.env.example
+*.local.php
+*.pem
+*.key
+
+# Runtime files and local tooling
+*.log
+/backups/
+/dumps/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

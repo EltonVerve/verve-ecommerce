@@ -1,0 +1,83 @@
+/* =========================================================
+   VERVE ADMIN — lightweight dashboard skin
+   Reuses the storefront's colour variables (loaded via
+   style.css first) but lays things out as a sidebar app.
+   ========================================================= */
+
+body.admin-body {
+  --cream: #F3F7FC;
+  --ink: #18314F;
+  --ink-soft: #536B82;
+  --accent: #087F78;
+  --accent-dark: #06615C;
+  --accent-soft: #E1F5F0;
+  --line: #DCE6F0;
+  --line-soft: #EDF2F8;
+  background: radial-gradient(ellipse at top right, #E1F5F0 0, transparent 48%), var(--cream);
+}
+
+.admin-shell { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+
+.admin-sidebar {
+  background: linear-gradient(165deg, #183B59, #10263F 70%); color: #D7E5F2; padding: 1.6rem 1.2rem; position: sticky; top: 0; height: 100vh;
+}
+.admin-sidebar .brand { color: #fff; margin-bottom: 2rem; display: inline-flex; }
+.admin-sidebar nav a {
+  display: flex; align-items: center; gap: .7rem; padding: .65rem .8rem; border-radius: var(--radius-sm);
+  font-size: .88rem; font-weight: 500; color: #C0D2E3; margin-bottom: .2rem;
+}
+.admin-sidebar nav a:hover { background: #284C68; color: #fff; }
+.admin-sidebar nav a.active { background: var(--lime); color: #18314F; box-shadow: 0 4px 16px rgba(0,0,0,.12); }
+.admin-body a:focus-visible, .admin-body button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.admin-sidebar a:focus-visible { outline-color: var(--lime); }
+.admin-sidebar .sidebar-foot { margin-top: 2rem; padding-top: 1.2rem; border-top: 1px solid rgba(255,255,255,.12); }
+.admin-sidebar .sidebar-foot a { font-size: .82rem; color: #C0D2E3; }
+.admin-sidebar .sidebar-foot a:hover { color: var(--lime); }
+.admin-sidebar .sidebar-account { font-size: .78rem; color: #C0D2E3; margin-bottom: .6rem; }
+
+.admin-main { padding: 2rem 2.4rem 4rem; max-width: 1200px; }
+.admin-topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.8rem; flex-wrap: wrap; gap: 1rem; }
+.admin-topbar h1 { font-size: 1.5rem; margin: 0; }
+
+.stat-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 2rem; }
+.stat-card { background: #E3F5EF; border: 1px solid #C7E8DC; border-top: 3px solid #087F78; border-radius: var(--radius-md); padding: 1.2rem 1.4rem; box-shadow: 0 4px 14px rgba(24,49,79,.04); }
+.stat-card:nth-child(2) { background: #EAF2FF; border-color: #D1E0FA; border-top-color: #386AC3; }
+.stat-card:nth-child(3) { background: #FFF5DE; border-color: #F0E0B9; border-top-color: #AC7313; }
+.stat-card:nth-child(4) { background: #F1EDFC; border-color: #E0D7F6; border-top-color: #8054BC; }
+.stat-card:nth-child(5) { background: #FCEEF3; border-color: #F2D8E3; border-top-color: #B64876; }
+.stat-card .label { font-size: .76rem; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-soft); margin-bottom: .4rem; }
+.stat-card .value { font-family: var(--font-display); font-size: 1.6rem; }
+
+.admin-card { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 1.6rem; margin-bottom: 1.6rem; box-shadow: 0 6px 24px rgba(24,49,79,.045); }
+.admin-card h2 { font-size: 1.1rem; margin-bottom: 1rem; font-family: var(--font-body); font-weight: 700; }
+
+.admin-table { width: 100%; border-collapse: collapse; font-size: .87rem; }
+.admin-table th { background: #F0F5FB; text-align: left; padding: .7rem .6rem; border-bottom: 2px solid var(--line); font-size: .74rem; text-transform: uppercase; color: var(--ink-soft); }
+.admin-table td { padding: .8rem .6rem; border-bottom: 1px solid var(--line-soft); vertical-align: middle; }
+.admin-table tr:hover td { background: #F0FAF7; }
+.admin-table td a:not(.btn) { color: var(--accent-dark); }
+.admin-table td a:not(.btn):hover { text-decoration: underline; }
+.admin-table img.thumb { width: 42px; height: 42px; border-radius: var(--radius-sm); object-fit: cover; }
+
+.admin-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; gap: 1rem; flex-wrap: wrap; }
+.admin-search { display: flex; gap: .5rem; }
+.admin-search input { min-width: 220px; }
+
+.badge-dot { display: inline-flex; align-items: center; gap: .4rem; font-size: .8rem; font-weight: 600; }
+.badge-dot::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--ink-soft); }
+.badge-dot.on::before { background: var(--sage); }
+.badge-dot.off::before { background: var(--error); }
+
+.option-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: .6rem; margin-bottom: .5rem; align-items: center; }
+.option-group-block { border: 1px dashed var(--line); border-radius: var(--radius-sm); padding: 1rem; margin-bottom: 1rem; }
+
+.login-shell { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.25rem; background: radial-gradient(ellipse at top right, #176863, transparent 60%), linear-gradient(145deg, #183B59, #10263F); }
+.login-card { background: var(--paper); border: 1px solid #DCE6F0; border-top: 4px solid var(--lime); border-radius: var(--radius-lg); padding: 2.5rem; width: 380px; max-width: 100%; box-shadow: 0 24px 64px rgba(6,20,36,.3); }
+.login-card .brand { display: flex; justify-content: center; margin-bottom: 1.5rem; }
+
+@media (max-width: 980px) {
+  .admin-shell { grid-template-columns: 1fr; }
+  .admin-sidebar { height: auto; position: static; display: flex; align-items: center; justify-content: space-between; }
+  .admin-sidebar nav { display: flex; gap: .3rem; overflow-x: auto; }
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+}
