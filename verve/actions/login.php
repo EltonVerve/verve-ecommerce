@@ -16,8 +16,9 @@ verifyCsrf();
 
 $email = trim(strtolower($_POST['email'] ?? ''));
 $password = (string) ($_POST['password'] ?? '');
-$redirect = is_string($_POST['redirect'] ?? null) && $_POST['redirect'] !== '' ? $_POST['redirect'] : (BASE_URL . '/pages/account.php');
+$redirect = BASE_URL . '/pages/account.php';
 
+limitAuthRequests($pdo, 'login', $email);
 $user = attemptLogin($pdo, $email, $password);
 
 if (!$user || $user['role'] !== 'customer') {
@@ -34,6 +35,8 @@ if (!empty($_SESSION['guest_id'])) {
     mergeGuestCartIntoUser($pdo, (int) $user['id'], $_SESSION['guest_id']);
 }
 
+session_regenerate_id(true);
+$_SESSION['password_fingerprint'] = hash('sha256', $user['password_hash']);
 $_SESSION['user_id']   = $user['id'];
 $_SESSION['user_name'] = $user['full_name'];
 $_SESSION['user_role'] = $user['role'];

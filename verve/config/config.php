@@ -15,7 +15,31 @@ define('STORE_CURRENCY_SYMBOL', 'KSh ');
 // Change this if your project folder isn't at the site root.
 // Do not include a trailing slash.
 // e.g. 'http://localhost/verve'
-define('BASE_URL', 'http://localhost/verve-ecommerce/verve');
+define('APP_ENV', getenv('VERVE_ENV') ?: 'development');
+define('BASE_URL', rtrim(getenv('VERVE_BASE_URL') ?: 'http://localhost/verve-ecommerce/verve', '/'));
+if (APP_ENV === 'production') {
+    ini_set('display_errors', '0');
+    ini_set('log_errors', '1');
+    if (parse_url(BASE_URL, PHP_URL_SCHEME) !== 'https' || !getenv('VERVE_DB_USER') || !getenv('VERVE_DB_PASS')) {
+        http_response_code(503);
+        exit('Production configuration is incomplete.');
+    }
+    if (PHP_SAPI !== 'cli' && (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === 'off')) {
+        http_response_code(403);
+        exit('HTTPS is required.');
+    }
+    header('Strict-Transport-Security: max-age=31536000');
+}
+header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: SAMEORIGIN');
+header('Referrer-Policy: same-origin');
+header('Cache-Control: no-store');
+set_exception_handler(static function (Throwable $error): void {
+    error_log((string) $error);
+    http_response_code(500);
+    echo 'Something went wrong. Please try again later.';
+    if (PHP_SAPI === 'cli') exit(1);
+});
 
 define('FREE_SHIPPING_THRESHOLD', 75.00);
 define('FLAT_SHIPPING_FEE', 6.99);
@@ -36,7 +60,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-require_once __DIR__ . '/database.php';
+require_once __DIR__ . (APP_ENV === 'production' ? '/database.production.php' : '/database.php');
 require_once __DIR__ . '/../includes/helpers.php';
 
 // ---- Auto-load every model file ----
@@ -50,4 +74,18 @@ foreach (glob(__DIR__ . '/../models/*.php') as $modelFile) {
 
 if (session_name() === 'verve_store_session') {
     restoreCustomerLogin($pdo);
+} else {
+    enforceAdminIdleTimeout(time());
+}
+if (!empty($_SESSION['user_id'])) {
+    $sessionUser = findUserById($pdo, (int) $_SESSION['user_id']);
+    $expectedRole = session_name() === 'verve_admin_session' ? 'admin' : 'customer';
+    $fingerprint = $sessionUser ? hash('sha256', $sessionUser['password_hash']) : '';
+    if (!$sessionUser || $sessionUser['role'] !== $expectedRole ||
+        (isset($_SESSION['password_fingerprint']) && !hash_equals($_SESSION['password_fingerprint'], $fingerprint))) {
+        unset($_SESSION['user_id'], $_SESSION['user_name'], $_SESSION['user_role'], $_SESSION['password_fingerprint']);
+    } else {
+        $_SESSION['password_fingerprint'] = $fingerprint;
+        $_SESSION['user_name'] = $sessionUser['full_name'];
+    }
 }

@@ -14,10 +14,8 @@ function createResetToken(PDO $pdo, int $userId): string {
     $stmt->execute([$userId]);
 
     $token = bin2hex(random_bytes(32)); // 64 random hex characters — unguessable
-    $expiresAt = date('Y-m-d H:i:s', strtotime('+30 minutes'));
-
-    $stmt = $pdo->prepare("INSERT INTO password_resets (user_id, token, expires_at) VALUES (?, ?, ?)");
-    $stmt->execute([$userId, $token, $expiresAt]);
+    $stmt = $pdo->prepare("INSERT INTO password_resets (user_id, token, expires_at) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 30 MINUTE))");
+    $stmt->execute([$userId, hash('sha256', $token)]);
 
     return $token;
 }
@@ -31,18 +29,20 @@ function findValidReset(PDO $pdo, string $token): ?array {
         JOIN users u ON u.id = pr.user_id
         WHERE pr.token = ? AND pr.expires_at > NOW()
     ");
-    $stmt->execute([$token]);
+    $stmt->execute([hash('sha256', $token)]);
     $reset = $stmt->fetch();
     return $reset ?: null;
 }
 
 function deleteResetToken(PDO $pdo, string $token): void {
     $stmt = $pdo->prepare("DELETE FROM password_resets WHERE token = ?");
-    $stmt->execute([$token]);
+    $stmt->execute([hash('sha256', $token)]);
 }
 
 function updateUserPassword(PDO $pdo, int $userId, string $newPlainPassword): void {
     $hash = password_hash($newPlainPassword, PASSWORD_DEFAULT);
     $stmt = $pdo->prepare("UPDATE users SET password_hash = ? WHERE id = ?");
     $stmt->execute([$hash, $userId]);
+    $pdo->prepare('DELETE FROM customer_sessions WHERE user_id = ?')->execute([$userId]);
+    $pdo->prepare('DELETE FROM password_resets WHERE user_id = ?')->execute([$userId]);
 }

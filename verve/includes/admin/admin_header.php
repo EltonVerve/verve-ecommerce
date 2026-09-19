@@ -30,9 +30,9 @@ $adminCurrentPage = basename($_SERVER['PHP_SELF']);
       <a href="<?= BASE_URL ?>/pages/admin/categories.php" class="<?= $adminCurrentPage === 'categories.php' ? 'active' : '' ?>">Categories</a>
       <a href="<?= BASE_URL ?>/pages/admin/orders.php" class="<?= in_array($adminCurrentPage, ['orders.php', 'order_detail.php'], true) ? 'active' : '' ?>">Orders</a>
       <a href="<?= BASE_URL ?>/pages/admin/messages.php" class="<?= in_array($adminCurrentPage, ['messages.php', 'message_detail.php'], true) ? 'active' : '' ?>">Messages</a>
-      <a href="<?= BASE_URL ?>/pages/admin/customers.php" class="<?= $adminCurrentPage === 'customers.php' ? 'active' : '' ?>">Customers</a>
+      <a href="<?= BASE_URL ?>/pages/admin/customers.php" class="<?= in_array($adminCurrentPage, ['customers.php', 'customer_detail.php'], true) ? 'active' : '' ?>">Customers</a>
       <a href="<?= BASE_URL ?>/pages/admin/reports.php" class="<?= $adminCurrentPage === 'reports.php' ? 'active' : '' ?>">Reports</a>
-    </nav>
+    <a href="<?= BASE_URL ?>/pages/admin/profile.php">My profile</a></nav>
     <div class="sidebar-foot">
       <div class="sidebar-account">Signed in as<br><strong style="color:#fff;"><?= h($_SESSION['user_name'] ?? '') ?></strong></div>
       <a href="<?= BASE_URL ?>/actions/admin/logout.php">Log out</a>

@@ -17,20 +17,17 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 verifyCsrf();
 
 $email = trim(strtolower($_POST['email'] ?? ''));
+limitAuthRequests($pdo, 'reset', $email);
 $user = findUserByEmail($pdo, $email);
 
-if ($user) {
-    $token = createResetToken($pdo, $user['id']);
+unset($_SESSION['demo_reset_link']);
+if ($user && getenv('VERVE_MAIL_FROM') && filter_var(getenv('VERVE_MAIL_FROM'), FILTER_VALIDATE_EMAIL)) {
+    $token = createResetToken($pdo, (int) $user['id']);
     $resetLink = BASE_URL . '/pages/reset_password.php?token=' . $token;
-
-    // ---- Where real email sending would happen ----
-    // e.g. using PHPMailer + SMTP, or an API-based service.
-    // For now we log it and flash a link so the flow is fully
-    // testable without a mail server configured.
-    error_log('[password reset] ' . $email . ' -> ' . $resetLink);
-    $_SESSION['demo_reset_link'] = $resetLink;
+    if (!mail($user['email'], 'Reset your Verve password', "Use this link within 30 minutes:\n" . $resetLink, 'From: ' . getenv('VERVE_MAIL_FROM'))) {
+        error_log('Password reset email delivery failed.');
+    }
 }
-
 setFlash('success', 'If that email has an account, a reset link has been sent to it.');
 header('Location: ' . BASE_URL . '/pages/forgot_password.php');
 exit;

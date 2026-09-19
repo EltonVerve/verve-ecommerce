@@ -34,13 +34,13 @@ require __DIR__ . '/../includes/flash.php';
           <input type="tel" id="phone" name="phone" value="<?= h($user['phone'] ?? '') ?>">
         </div>
         <hr class="divider">
-        <p class="muted small">Leave the password fields blank to keep your current password.</p>
+        <p class="muted small">Leave the new password fields blank to keep your current password.</p>
         <div class="field">
-          <label for="new_password">New password</label>
-          <input type="password" id="new_password" name="new_password" minlength="8">
+          <label for="new_password">New password (12–72 bytes)</label>
+          <input type="password" id="new_password" name="new_password" minlength="12" maxlength="72" autocomplete="new-password">
         </div>
         <div class="field">
-          <label for="current_password">Current password (required to save changes)</label>
+          <label for="password_confirm">Confirm new password</label><input type="password" id="password_confirm" name="password_confirm" autocomplete="new-password"></div><div class="field"><label for="current_password">Current password (required to save changes)</label>
           <input type="password" id="current_password" name="current_password" required>
         </div>
         <button type="submit" class="btn btn-primary btn-block">Save changes</button>

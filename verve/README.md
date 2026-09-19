@@ -7,6 +7,10 @@ panel for managing products, categories, orders and customer messages.
 
 
 
+## Deployment and account management
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for the cash-on-delivery launch checklist and required environment settings. Run `php sql/install_auth_rate_limits.php` after importing the schema or updating an existing installation. Admins can open a customer's name under Customers to inspect their activity, and use My profile to update their own account.
+
 ## Requirements
 
 - PHP 8.1+ with the `pdo_mysql`, `mbstring` and `gd` extensions (all standard in XAMPP/WAMP/MAMP)
@@ -33,8 +37,7 @@ panel for managing products, categories, orders and customer messages.
    `BASE_URL/pages/admin/login.php` for the admin panel.
 
    Demo admin login: **admin@verve.test** / **Admin123!**
-   (Change this password immediately in a real deployment — update it via SQL or add an
-   admin "change password" flow before going live.)
+   Change this password through Admin → My profile before deployment.
 
 ## How the code is organised
 
@@ -55,11 +58,8 @@ validate input, do the database work, then redirect with a flash message.
 
 ## Notes on what's "real" vs. demo
 
-- **Payments** — checkout collects a payment method but doesn't process a real charge.
-  Wire in a real payment gateway (Stripe, Paystack, etc.) inside `actions/place_order.php`.
-- **Email** — password reset links and order confirmations are logged/flashed rather than
-  emailed. Plug in a mailer (PHPMailer + SMTP, or an email API) where the code comments
-  point it out in `actions/forgot_password.php`.
+- **Payments** — checkout supports cash on delivery only. Online payments require a gateway integration.
+- **Email** — password recovery requires `VERVE_MAIL_FROM` and a working server mail transport. Reset links are never displayed or logged. Order confirmation email is not implemented.
 - **Images** — sample products use placeholder images (via placehold.co) until you upload
   real photos through the admin panel.
 

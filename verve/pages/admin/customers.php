@@ -26,7 +26,7 @@ require __DIR__ . '/../../includes/admin/admin_flash.php';
     <tbody>
       <?php foreach ($customers as $c): ?>
         <tr>
-          <td><?= h($c['full_name']) ?></td>
+          <td><a href="<?= BASE_URL ?>/pages/admin/customer_detail.php?id=<?= (int) $c['id'] ?>"><?= h($c['full_name']) ?></a></td>
           <td><?= h($c['email']) ?></td>
           <td><?= (int) $c['order_count'] ?></td>
           <td><?= money((float) $c['total_spent']) ?></td>
@@ -35,7 +35,7 @@ require __DIR__ . '/../../includes/admin/admin_flash.php';
             <form action="<?= BASE_URL ?>/actions/admin/promote_customer.php" method="post" onsubmit="return confirm('Make this account an admin?');">
               <?= csrfField() ?>
               <input type="hidden" name="id" value="<?= (int) $c['id'] ?>">
-              <button type="submit" class="btn btn-outline btn-sm">Make admin</button>
+              <input type="password" name="current_password" required autocomplete="current-password" placeholder="Your admin password" aria-label="Your admin password"><button type="submit" class="btn btn-outline btn-sm">Make admin</button>
             </form>
           </td>
         </tr>

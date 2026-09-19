@@ -18,13 +18,6 @@ require __DIR__ . '/../includes/flash.php';
       </div>
       <button type="submit" class="btn btn-primary btn-block">Send reset link</button>
     </form>
-    <?php if (!empty($_SESSION['demo_reset_link'])): ?>
-      <div class="flash-banner flash-success" style="margin-top:1rem;">
-        Demo mode (no mail server configured) — your reset link:
-        <a href="<?= h($_SESSION['demo_reset_link']) ?>"><?= h($_SESSION['demo_reset_link']) ?></a>
-      </div>
-      <?php unset($_SESSION['demo_reset_link']); ?>
-    <?php endif; ?>
     <p class="auth-switch"><a href="<?= BASE_URL ?>/pages/login.php">Back to log in</a></p>
   </div>
 </div>

@@ -30,7 +30,7 @@ if (strlen($addressData['line1']) < 3) $errors[] = 'Please enter your street add
 if (strlen($addressData['city']) < 2) $errors[] = 'Please enter your city.';
 if (strlen($addressData['country']) < 2) $errors[] = 'Please enter your country.';
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'Please enter a valid email address.';
-if (!in_array($paymentMethod, ['card', 'mobile_money', 'cash_on_delivery'], true)) $errors[] = 'Please choose a payment method.';
+if ($paymentMethod !== 'cash_on_delivery') $errors[] = 'Please choose a payment method.';
 
 if ($errors) {
     setFlash('error', $errors[0]);

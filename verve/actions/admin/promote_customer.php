@@ -17,6 +17,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 verifyCsrf();
 
+$actor = findUserById($pdo, (int) $_SESSION['user_id']);
+limitAuthRequests($pdo, 'profile', (string) $_SESSION['user_id']);
+$password = is_string($_POST['current_password'] ?? null) ? $_POST['current_password'] : '';
+if (!$actor || !password_verify($password, $actor['password_hash'])) {
+    setFlash('error', 'Enter your current admin password to change account roles.');
+    header('Location: ' . BASE_URL . '/pages/admin/customers.php');
+    exit;
+}
 $id = (int) ($_POST['id'] ?? 0);
 
 if ($id === (int) $_SESSION['user_id']) {

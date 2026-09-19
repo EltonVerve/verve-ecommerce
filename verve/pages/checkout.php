@@ -102,21 +102,8 @@ require __DIR__ . '/../includes/flash.php';
 
       <div class="form-card">
         <h2 style="font-size:1.1rem;">Payment method</h2>
-        <div class="payment-options">
-          <label class="payment-option">
-            <input type="radio" name="payment_method" value="card" checked>
-            <span>Credit / debit card</span>
-          </label>
-          <label class="payment-option">
-            <input type="radio" name="payment_method" value="mobile_money">
-            <span>Mobile money</span>
-          </label>
-          <label class="payment-option">
-            <input type="radio" name="payment_method" value="cash_on_delivery">
-            <span>Cash on delivery</span>
-          </label>
-        </div>
-        <p class="hint">This is a demo checkout — no real payment is processed.</p>
+        <div class="payment-options"><label class="payment-option"><input type="radio" name="payment_method" value="cash_on_delivery" checked><span>Cash on delivery - pay when your order arrives</span></label></div>
+        <p class="hint">Payment is collected on delivery.</p>
       </div>
 
       <button type="submit" class="btn btn-primary btn-block" style="margin-top:1.5rem;">Place order — <?= money($total) ?></button>
