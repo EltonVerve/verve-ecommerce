@@ -25,7 +25,11 @@ if ($appliedCoupon) {
         ? round($subtotal * ((float) $appliedCoupon['value'] / 100), 2)
         : min($subtotal, (float) $appliedCoupon['value']);
 }
-$shipping = calculateShippingFee($subtotal);
+$zones = deliveryZones($pdo);
+$zoneId = filter_var($_GET['zone'] ?? ($zones[0]['id'] ?? 0), FILTER_VALIDATE_INT) ?: 0;
+$zone = null;
+try { $zone = deliveryQuote($pdo, $zoneId, $subtotal); } catch (RuntimeException $error) {}
+$shipping = $zone['shipping'] ?? 0;
 $total = max(0, $subtotal - $discount) + $shipping;
 
 $prefill = ['full_name' => '', 'line1' => '', 'line2' => '', 'city' => '', 'state' => '', 'postal_code' => '', 'country' => '', 'phone' => ''];
@@ -47,9 +51,17 @@ require __DIR__ . '/../includes/flash.php';
 
 <div class="shell section">
   <h1>Checkout</h1>
+  <form method="get" class="form-card" style="margin-bottom:1rem;">
+    <label for="delivery-zone">Delivery area</label>
+    <select id="delivery-zone" name="zone" required>
+      <?php foreach ($zones as $available): ?><option value="<?= (int) $available['id'] ?>" <?= (int) $available['id'] === $zoneId ? 'selected' : '' ?>><?= h($available['name']) ?>, <?= h($available['country']) ?></option><?php endforeach; ?>
+    </select><button type="submit" class="btn btn-outline btn-sm">Update delivery fee</button>
+    <p class="hint"><?= $zone ? h($zone['name']) . ': ' . money((float) $zone['fee']) . ($zone['free_over'] !== null ? ', free from ' . money((float) $zone['free_over']) : '') : 'No available delivery area selected. Ordering is unavailable.' ?></p>
+  </form>
   <div class="checkout-layout">
     <form action="<?= BASE_URL ?>/actions/place_order.php" method="post">
       <?= csrfField() ?>
+      <input type="hidden" name="delivery_zone_id" value="<?= (int) ($zone['id'] ?? 0) ?>">
 
       <div class="form-card" style="margin-bottom:1.5rem;">
         <h2 style="font-size:1.1rem;">Contact</h2>
@@ -91,12 +103,12 @@ require __DIR__ . '/../includes/flash.php';
           </div>
           <div class="field">
             <label for="country">Country</label>
-            <input type="text" id="country" name="country" required value="<?= h($prefill['country']) ?>">
+            <input type="text" id="country" name="country" required readonly value="<?= h($zone['country'] ?? '') ?>">
           </div>
         </div>
         <div class="field">
           <label for="phone">Phone number</label>
-          <input type="tel" id="phone" name="phone" value="<?= h($prefill['phone'] ?? '') ?>">
+          <input type="tel" id="phone" name="phone" required maxlength="30" autocomplete="tel" placeholder="e.g. +254712345678" value="<?= h($prefill['phone'] ?? '') ?>">
         </div>
       </div>
 

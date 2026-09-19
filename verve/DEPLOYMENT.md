@@ -2,6 +2,14 @@
 
 The application has not been deployed. Hosting provider and domain are still needed.
 
+## Delivery, payment and image management
+
+Run `php sql/install_order_operations.php` before deploying this update. It installs delivery zones, payment state and order history. Nairobi is seeded at KSh 200, free from KSh 5,000 before discounts. These are proposed store prices, not verified courier quotes: review them in Admin → Delivery areas before launch. Customers select a delivery area; this is not geographic address verification. Admins must confirm the address is within that area before dispatch. Cart shipping is an estimate; checkout quotes the selected area.
+
+Delivery advances pending → processing → shipped → completed (delivered). Pending/processing orders may be cancelled; stock is restored exactly once. Cancelled and delivered orders cannot be reopened. Shipped returns require a separate manual review; there is no automatic return-restocking workflow. Payment is recorded separately as unpaid, collected or refunded. These buttons record receipt/refund of money; they do not move money. Legacy orders keep their delivery status; only legacy `paid` orders are inferred collected, other legacy payment states require review. Legacy cancelled orders are not restocked retrospectively because their physical stock history is unknown. History begins with this update; earlier transitions are not reconstructed.
+
+Product photos can be removed and reordered before saving. Enable PHP GD with WebP support in the web server's PHP configuration for automatic 600px/1600px optimization on upload. Without GD, originals remain usable and admins receive a notice. Uploads are limited to 5 MB and 12 megapixels each; total PHP request limits also apply. Unreferenced generated uploads and their variants are deleted after removal or failed saves. Seed images and shared referenced assets are retained. A hard process/server crash can still require manual orphan-file review.
+
 ## Performance setup
 
 - Run `php sql/install_performance_indexes.php` once per database (safe to rerun). Back up first and schedule index creation off-peak on a large live database.

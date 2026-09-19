@@ -41,8 +41,8 @@ set_exception_handler(static function (Throwable $error): void {
     if (PHP_SAPI === 'cli') exit(1);
 });
 
-define('FREE_SHIPPING_THRESHOLD', 75.00);
-define('FLAT_SHIPPING_FEE', 6.99);
+define('FREE_SHIPPING_THRESHOLD', 5000.00);
+define('FLAT_SHIPPING_FEE', 200.00);
 
 // Every page starts the session here so login/cart state
 // works everywhere. session_start() must run before ANY

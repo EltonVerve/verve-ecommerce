@@ -23,8 +23,12 @@ foreach (['full_name', 'line1', 'line2', 'city', 'state', 'postal_code', 'countr
 }
 $email = strtolower($text('email'));
 $paymentMethod = $text('payment_method');
+$addressData['delivery_zone_id'] = (int) ($_POST['delivery_zone_id'] ?? 0);
+$addressData['phone'] = preg_replace('/[\s().-]+/', '', $addressData['phone']);
 
 $errors = [];
+if (!preg_match('/^\+?[0-9]{9,15}$/D', $addressData['phone'])) $errors[] = 'Enter a delivery phone number with 9–15 digits, including country code where needed.';
+try { deliveryQuote($pdo, $addressData['delivery_zone_id'], 0); } catch (RuntimeException $error) { $errors[] = 'Please select an available delivery area.'; }
 if (strlen($addressData['full_name']) < 2) $errors[] = 'Please enter your full name.';
 if (strlen($addressData['line1']) < 3) $errors[] = 'Please enter your street address.';
 if (strlen($addressData['city']) < 2) $errors[] = 'Please enter your city.';
@@ -43,6 +47,11 @@ $userId = isCustomerLoggedIn() ? (int) $_SESSION['user_id'] : null;
 
 try {
     $placed = createOrderFromCart($pdo, $userId, $addressData, $email, $paymentMethod, $coupon);
+} catch (PDOException $error) {
+    error_log('Checkout database error: ' . $error->getMessage());
+    setFlash('error', 'Stock or order details changed. Please review your cart and try again.');
+    header('Location: ' . BASE_URL . '/pages/cart.php');
+    exit;
 } catch (RuntimeException $error) {
     setFlash('error', $error->getMessage());
     header('Location: ' . BASE_URL . '/pages/cart.php');

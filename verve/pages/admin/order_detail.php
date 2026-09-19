@@ -53,17 +53,31 @@ require __DIR__ . '/../../includes/admin/admin_flash.php';
   <div>
     <div class="admin-card">
       <h2>Status</h2>
+      <p class="hint">Delivery and cash collection are recorded separately. Completed means delivered.</p>
       <form action="<?= BASE_URL ?>/actions/admin/update_order_status.php" method="post">
         <?= csrfField() ?>
         <input type="hidden" name="order_id" value="<?= (int) $order['id'] ?>">
         <div class="field">
-          <select name="status" onchange="this.form.submit()">
-            <?php foreach (getOrderStatusOptions() as $status): ?>
+          <label for="order-status">Order status</label>
+          <select id="order-status" name="status" aria-describedby="order-status-help">
+            <?php foreach (array_unique(array_merge([$order['status']], ['pending','processing','shipped','completed','cancelled'])) as $status): ?>
               <option value="<?= h($status) ?>" <?= $order['status'] === $status ? 'selected' : '' ?>><?= h(ucfirst($status)) ?></option>
             <?php endforeach; ?>
           </select>
         </div>
+        <p id="order-status-help" class="hint">Choose a status, then save to apply the change.</p>
+        <button type="submit" class="btn btn-primary">Save status</button>
       </form>
+      <hr class="divider"><h2>Payment collection</h2>
+      <p>Current: <?= h(ucfirst($order['payment_status'])) ?></p>
+      <form action="<?= BASE_URL ?>/actions/admin/update_order_status.php" method="post">
+        <?= csrfField() ?><input type="hidden" name="order_id" value="<?= (int) $order['id'] ?>"><input type="hidden" name="operation" value="payment">
+        <label for="payment-status">Payment status</label><select id="payment-status" name="status">
+        <?php foreach (array_unique([$order['payment_status'], 'unpaid','collected','refunded']) as $payment): ?><option value="<?= h($payment) ?>" <?= $payment === $order['payment_status'] ? 'selected' : '' ?>><?= h(ucfirst($payment)) ?></option><?php endforeach; ?>
+        </select><p class="hint">Mark collected only after receiving the full payment. Refunded records money actually returned.</p>
+        <button class="btn btn-primary" type="submit">Save payment</button>
+      </form>
+      <?php require __DIR__ . '/../../includes/order-tracking.php'; ?>
     </div>
 
     <div class="admin-card">

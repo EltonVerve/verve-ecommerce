@@ -111,6 +111,15 @@ body.admin-body {
   .profile-save-actions .btn { width: 100%; }
 }
 
+.product-image-previews { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1rem; margin-top: 1rem; }
+.product-image-card { position: relative; padding: .6rem; border: 2px solid var(--line); border-radius: var(--radius-md); background: var(--paper); cursor: grab; }
+.product-image-card.is-main { border-color: #087f78; background: #f0faf7; }
+.product-image-card > img { width: 100%; aspect-ratio: 1; object-fit: contain; border-radius: var(--radius-sm); pointer-events: none; }
+.image-position { display: block; margin: .6rem 0; color: #18314f; font-size: .8rem; font-weight: 700; }
+.is-main .image-position { color: #08665f; }
+.image-card-actions { display: flex; gap: .3rem; flex-wrap: wrap; }
+.image-card-actions .btn { padding: .35rem .5rem; font-size: .7rem; }
+
 @media (max-width: 980px) {
   .admin-shell { grid-template-columns: 1fr; }
   .admin-sidebar { height: auto; position: static; display: flex; align-items: center; justify-content: space-between; }

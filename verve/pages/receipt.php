@@ -33,6 +33,7 @@ if (!$order) {
       <span class="status-pill status-<?= h($order['status']) ?>"><?= h(ucfirst($order['status'])) ?></span>
     </div>
 
+    <?php require __DIR__ . '/../includes/order-tracking.php'; ?>
     <table class="data-table">
       <thead><tr><th>Item</th><th>Qty</th><th style="text-align:right;">Total</th></tr></thead>
       <tbody>

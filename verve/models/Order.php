@@ -9,8 +9,10 @@
 
 // Flat-rate shipping, free above a threshold — set in config.php.
 function calculateShippingFee(float $subtotal): float {
-    if ($subtotal >= FREE_SHIPPING_THRESHOLD) return 0.00;
-    return FLAT_SHIPPING_FEE;
+    global $pdo;
+    $zones = deliveryZones($pdo);
+    if (!$zones) return 0.0;
+    return deliveryQuote($pdo, (int) $zones[0]['id'], $subtotal)['shipping'];
 }
 
 /**
@@ -24,6 +26,7 @@ function calculateShippingFee(float $subtotal): float {
  * Returns the new order's ID (and a guest access token, if any).
  */
 function createOrderFromCart(PDO $pdo, ?int $userId, array $address, string $email, string $paymentMethod, ?array $coupon = null): array {
+    if ($paymentMethod !== 'cash_on_delivery' || !preg_match('/^\+?[0-9]{9,15}$/D', $address['phone'] ?? '')) throw new RuntimeException('A valid delivery phone and cash-on-delivery payment are required.');
     $pdo->beginTransaction();
     try {
         $items = getCartItems($pdo, true);
@@ -41,7 +44,10 @@ function createOrderFromCart(PDO $pdo, ?int $userId, array $address, string $ema
             }
         }
         $subtotal = round($subtotal, 2);
-        $shipping = calculateShippingFee($subtotal);
+        $zone = deliveryQuote($pdo, (int) ($address['delivery_zone_id'] ?? 0), $subtotal);
+        $shipping = $zone['shipping'];
+        $address['country'] = $zone['country'];
+        $address['delivery_area'] = $zone['name'];
 
         $discount = 0.0;
         $couponCode = null;
@@ -69,7 +75,7 @@ function createOrderFromCart(PDO $pdo, ?int $userId, array $address, string $ema
             INSERT INTO order_items (order_id, product_id, product_name, quantity, selected_options, unit_price, line_total)
             VALUES (?, ?, ?, ?, ?, ?, ?)
         ");
-        $stockStmt = $pdo->prepare("UPDATE products SET stock = stock - ? WHERE id = ?");
+        $stockStmt = $pdo->prepare("UPDATE products SET stock = stock - ? WHERE id = ? AND stock >= ? AND is_active = 1");
         foreach ($items as $item) {
             $itemStmt->execute([
                 $orderId,
@@ -80,7 +86,8 @@ function createOrderFromCart(PDO $pdo, ?int $userId, array $address, string $ema
                 $item['unit_price'],
                 $item['unit_price'] * $item['quantity'],
             ]);
-            $stockStmt->execute([$item['quantity'], $item['product_id']]);
+            $stockStmt->execute([$item['quantity'], $item['product_id'], $item['quantity']]);
+            if ($stockStmt->rowCount() !== 1) throw new RuntimeException('Stock changed. Please review your cart and try again.');
         }
 
         // Empty the cart now that everything's safely copied into the order
@@ -116,7 +123,7 @@ function getOrderWithItems(PDO $pdo, int $orderId, int $userId): ?array {
 }
 
 // A guest token grants access to this order only; if the link is lost,
-// the order email can still be used as a fallback for guest orders.
+// access requires the private token, never an email address alone.
 function getAccessibleOrder(PDO $pdo, int $orderId, ?string $token = null, ?string $email = null): ?array {
     $stmt = $pdo->prepare('SELECT * FROM orders WHERE id = ?');
     $stmt->execute([$orderId]);
@@ -124,17 +131,6 @@ function getAccessibleOrder(PDO $pdo, int $orderId, ?string $token = null, ?stri
     if (!$order) return null;
     if ($order['user_id'] !== null && isCustomerLoggedIn() && (int) $order['user_id'] === (int) $_SESSION['user_id']) {
         return hydrateOrder($pdo, $order);
-    }
-
-    $email = is_string($email) ? trim(strtolower($email)) : null;
-    if ($order['user_id'] === null && $email !== null && trim((string) ($order['contact_email'] ?? '')) !== '') {
-        $orderEmail = strtolower(trim((string) $order['contact_email']));
-        if ($orderEmail === $email) {
-            $_SESSION['guest_order_tokens'][$orderId] = bin2hex(random_bytes(32));
-            $stmt = $pdo->prepare('UPDATE orders SET guest_access_hash = ? WHERE id = ?');
-            $stmt->execute([hash('sha256', $_SESSION['guest_order_tokens'][$orderId]), $orderId]);
-            return hydrateOrder($pdo, $order);
-        }
     }
 
     $token = $token ?? ($_SESSION['guest_order_tokens'][$orderId] ?? null);
@@ -233,7 +229,5 @@ function getOrderStatusOptions(): array {
 }
 
 function updateOrderStatus(PDO $pdo, int $orderId, string $status): void {
-    if (!in_array($status, getOrderStatusOptions(), true)) return;
-    $stmt = $pdo->prepare("UPDATE orders SET status = ? WHERE id = ?");
-    $stmt->execute([$status, $orderId]);
+    changeOrderOperation($pdo, $orderId, 'delivery', $status, (int) ($_SESSION['user_id'] ?? 0));
 }

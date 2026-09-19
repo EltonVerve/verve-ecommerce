@@ -79,19 +79,23 @@ require __DIR__ . '/../../includes/admin/admin_flash.php';
   </div>
 
   <div class="field">
-    <label for="images">Product images (first image is the main photo)</label>
-    <input type="file" id="images" name="images[]" accept="image/png,image/jpeg,image/webp" multiple>
-    <?php if ($images): ?>
-      <div style="display:flex; gap:.6rem; margin-top:.7rem; flex-wrap:wrap;">
-        <?php foreach ($images as $img): ?>
-          <img src="<?= h(productImageUrl($img['filename'])) ?>" style="width:60px; height:60px; object-fit:cover; border-radius:6px;" alt="">
-        <?php endforeach; ?>
-      </div>
-    <?php elseif (!empty($product['image'])): ?>
-      <div style="margin-top:.7rem;"><img src="<?= h(productImageUrl($product['image'])) ?>" style="width:60px; height:60px; object-fit:cover; border-radius:6px;" alt=""></div>
-    <?php endif; ?>
+    <label for="images">Product photos</label>
+    <p class="hint">Choose multiple images at once or add more in another selection. Drag your main picture to the first position, or use Make main. Remove unwanted photos, then Save product to apply.</p>
+    <input type="file" id="images" name="images[]" accept="image/png,image/jpeg,image/webp" multiple data-max-files="<?= min(20, (int) ini_get('max_file_uploads')) ?>">
+    <input type="hidden" id="image-order" name="image_order" disabled>
+    <p class="hint">JPG, PNG or WebP, up to 5 MB each. Your server's total upload limit is <?= h(ini_get('post_max_size')) ?>.</p>
+    <div id="image-previews" class="product-image-previews">
+      <?php foreach (productGalleryFiles($product, $images) as $position => $filename): ?>
+        <div class="product-image-card <?= $position === 0 ? 'is-main' : '' ?>" data-key="<?= h('existing:' . $filename) ?>">
+          <img src="<?= h(productImageUrl($filename, 'Product photo', 600)) ?>" alt="Product photo <?= $position + 1 ?>">
+          <span class="image-position"><?= $position === 0 ? 'Main photo' : 'Photo ' . ($position + 1) ?></span>
+        </div>
+      <?php endforeach; ?>
+    </div>
+    <p id="image-message" class="hint" role="status" aria-live="polite"></p>
+    <noscript><p>Multiple uploads are supported. Enable JavaScript to preview and reorder images.</p></noscript>
   </div>
-
+  <script src="<?= BASE_URL ?>/public/assets/js/product-images.js" defer></script>
   <hr class="divider">
   <h3 style="font-size:1rem;">Variants (optional)</h3>
   <p class="muted small">e.g. a "Size" group with values S / M / L, or a "Colour" group with values Black / White.</p>

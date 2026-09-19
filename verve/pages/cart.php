@@ -88,7 +88,8 @@ require __DIR__ . '/../includes/flash.php';
         <?php if ($appliedCoupon): ?>
           <div class="summary-row"><span>Discount (<?= h($appliedCoupon['code']) ?>)</span><span>&minus;<?= money($discount) ?></span></div>
         <?php endif; ?>
-        <div class="summary-row"><span>Shipping</span><span><?= $shipping > 0 ? money($shipping) : 'Free' ?></span></div>
+        <div class="summary-row"><span>Estimated shipping</span><span><?= $shipping > 0 ? money($shipping) : 'Free' ?></span></div>
+        <p class="hint">Delivery availability and final fee are confirmed for your selected area at checkout.</p>
         <div class="summary-row total"><span>Total</span><span><?= money($total) ?></span></div>
 
         <form action="<?= BASE_URL ?>/actions/apply_coupon.php" method="post" class="coupon-row">
