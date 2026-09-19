@@ -9,6 +9,16 @@
  * ---------------------------------------------------------
  */
 
+function wishlistCardContains(PDO $pdo, int $userId, int $productId): bool {
+    static $ids = [];
+    if (!isset($ids[$userId])) {
+        $stmt = $pdo->prepare('SELECT product_id FROM wishlist_items WHERE user_id = ?');
+        $stmt->execute([$userId]);
+        $ids[$userId] = array_fill_keys($stmt->fetchAll(PDO::FETCH_COLUMN), true);
+    }
+    return isset($ids[$userId][$productId]);
+}
+
 function isInWishlist(PDO $pdo, int $userId, int $productId): bool {
     $stmt = $pdo->prepare("SELECT 1 FROM wishlist_items WHERE user_id = ? AND product_id = ?");
     $stmt->execute([$userId, $productId]);

@@ -35,7 +35,7 @@ function restoreCustomerLogin(PDO $pdo): void {
         clearCustomerIdentity();
         return;
     }
-    $stmt = $pdo->prepare('SELECT u.*, s.password_fingerprint FROM customer_sessions s JOIN users u ON u.id = s.user_id WHERE s.token_hash = ? AND s.expires_at > ?');
+    $stmt = $pdo->prepare('SELECT u.*, s.password_fingerprint, s.expires_at FROM customer_sessions s JOIN users u ON u.id = s.user_id WHERE s.token_hash = ? AND s.expires_at > ?');
     $stmt->execute([hash('sha256', $token), time()]);
     $user = $stmt->fetch();
     if (!$user || $user['role'] !== 'customer' || !hash_equals($user['password_fingerprint'], hash('sha256', $user['password_hash']))) {
@@ -52,7 +52,11 @@ function restoreCustomerLogin(PDO $pdo): void {
     $_SESSION['user_role'] = 'customer';
     $_SESSION['password_fingerprint'] = hash('sha256', $user['password_hash']);
     $expires = time() + 30 * 86400;
-    $pdo->prepare('UPDATE customer_sessions SET expires_at = ? WHERE token_hash = ?')->execute([$expires, hash('sha256', $token)]);
+    if ((int) $user['expires_at'] < $expires - 300) {
+        $pdo->prepare('UPDATE customer_sessions SET expires_at = ? WHERE token_hash = ?')->execute([$expires, hash('sha256', $token)]);
+    } else {
+        $expires = (int) $user['expires_at'];
+    }
     customerCookie($token, $expires);
 }
 

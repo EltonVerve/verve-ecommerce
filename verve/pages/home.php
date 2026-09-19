@@ -25,7 +25,7 @@ require __DIR__ . '/../includes/flash.php';
   <div class="category-grid">
     <?php foreach ($categories as $category): ?>
       <a class="category-card" href="<?= BASE_URL ?>/pages/shop.php?cat=<?= h($category['slug']) ?>">
-        <img src="<?= h(productImageUrl($category['image'], $category['name'])) ?>" alt="" width="600" height="600" loading="lazy">
+        <img src="<?= h(productImageUrl($category['image'], $category['name'], 600)) ?>" alt="" width="600" height="600" loading="lazy">
         <span class="category-card-name"><?= h($category['name']) ?></span>
       </a>
     <?php endforeach; ?>

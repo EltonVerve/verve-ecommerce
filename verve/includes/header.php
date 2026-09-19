@@ -61,7 +61,7 @@ $headerCustomer = isCustomerLoggedIn();
           <div class="category-mega-grid">
             <?php foreach ($shopCategories as $category): ?>
               <a href="<?= BASE_URL ?>/pages/shop.php?cat=<?= h($category['slug']) ?>" <?= $currentPage === 'shop.php' && ($_GET['cat'] ?? '') === $category['slug'] ? 'aria-current="page"' : '' ?>>
-                <img src="<?= h(productImageUrl($category['image'], $category['name'])) ?>" alt="" width="56" height="56" loading="lazy">
+                <img src="<?= h(productImageUrl($category['image'], $category['name'], 600)) ?>" alt="" width="56" height="56" loading="lazy">
                 <span><?= h($category['name']) ?></span><span aria-hidden="true">&nearr;</span>
               </a>
             <?php endforeach; ?>

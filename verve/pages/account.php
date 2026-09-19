@@ -15,27 +15,24 @@ $orders = getOrdersForUser($pdo, (int) $_SESSION['user_id']);
 $wishlist = getWishlistForUser($pdo, (int) $_SESSION['user_id']);
 $tab = in_array($_GET['tab'] ?? '', ['orders', 'wishlist'], true) ? $_GET['tab'] : 'orders';
 
-$pageTitle = 'My Account';
+$accountSection = $tab;
+$pageTitle = $tab === 'orders' ? 'Order history' : 'Wishlist';
 require __DIR__ . '/../includes/header.php';
 require __DIR__ . '/../includes/flash.php';
 ?>
 
-<div class="shell section">
-  <h1>My Account</h1>
-  <p class="muted">Welcome back, <?= h($user['full_name'] ?? '') ?>.</p>
+<div class="shell section customer-profile customer-account">
+  <header class="customer-profile-banner">
+    <div><span class="customer-profile-eyebrow">Your account</span><h1><?= h($pageTitle) ?></h1><p><?= $tab === 'orders' ? 'Track your purchases and revisit your favourites.' : 'Your favourite finds, saved for another day.' ?></p></div>
+    <a class="btn customer-profile-shop" href="<?= BASE_URL ?>/pages/shop.php">Continue shopping &rarr;</a>
+  </header>
 
   <div class="account-layout">
-    <nav class="account-nav">
-      <a href="?tab=orders" class="<?= $tab === 'orders' ? 'active' : '' ?>">Order history</a>
-      <a href="<?= BASE_URL ?>/pages/cart.php">My cart (<?= (int) $cartCount ?>)</a>
-      <a href="?tab=wishlist" class="<?= $tab === 'wishlist' ? 'active' : '' ?>">Wishlist (<?= count($wishlist) ?>)</a>
-      <a href="<?= BASE_URL ?>/pages/edit_account.php">Edit profile</a>
-      <a href="<?= BASE_URL ?>/actions/logout.php">Log out</a>
-    </nav>
+    <?php require __DIR__ . '/../includes/customer-account-nav.php'; ?>
 
-    <div>
+    <div class="customer-account-content">
       <?php if ($tab === 'orders'): ?>
-        <h2>Order history</h2>
+        <div class="customer-account-heading"><h2>Your orders</h2><span><?= count($orders) ?> orders</span></div>
         <?php if (!$orders): ?>
           <div class="empty-state">
             <h3>No orders yet</h3>
@@ -61,6 +58,7 @@ require __DIR__ . '/../includes/flash.php';
           </div>
         <?php endif; ?>
       <?php else: ?>
+        <div class="customer-account-heading"><h2>Saved for later</h2><span><?= count($wishlist) ?> items</span></div>
         <?php if (!$wishlist): ?>
           <div class="empty-state">
             <h3>Your wishlist is empty</h3>

@@ -9,7 +9,9 @@
  */
 require_once __DIR__ . '/../config/config.php';
 
-$pageTitle = 'Your Cart';
+$pageTitle = 'My cart';
+$accountSection = 'cart';
+$user = isCustomerLoggedIn() ? findUserById($pdo, (int) $_SESSION['user_id']) : null;
 $items = getCartItems($pdo);
 $subtotal = getCartSubtotal($pdo);
 $shipping = $items ? calculateShippingFee($subtotal) : 0;
@@ -31,9 +33,15 @@ require __DIR__ . '/../includes/header.php';
 require __DIR__ . '/../includes/flash.php';
 ?>
 
-<div class="shell section">
-  <h1>Your Cart</h1>
-  <p><a class="btn btn-outline btn-sm" href="<?= BASE_URL ?>/pages/account.php?tab=orders">View order history</a></p>
+<div class="shell section customer-profile customer-cart">
+  <header class="customer-profile-banner">
+    <div><span class="customer-profile-eyebrow"><?= $user ? 'Your account' : 'Your shopping bag' ?></span><h1>My cart</h1><p>Review your finds and get ready for checkout.</p></div>
+    <a class="btn customer-profile-shop" href="<?= BASE_URL ?>/pages/shop.php">Continue shopping &rarr;</a>
+  </header>
+  <div class="<?= $user ? 'account-layout' : 'guest-cart-layout' ?>">
+  <?php if ($user) require __DIR__ . '/../includes/customer-account-nav.php'; ?>
+  <div class="customer-cart-content">
+  <div class="customer-account-heading"><h2>Your shopping bag</h2><span><?= (int) $cartCount ?> items</span></div>
 
   <?php if (!$items): ?>
     <div class="empty-state">
@@ -93,6 +101,8 @@ require __DIR__ . '/../includes/flash.php';
       </div>
     </div>
   <?php endif; ?>
+  </div>
+  </div>
 </div>
 
 <?php require __DIR__ . '/../includes/footer.php'; ?>

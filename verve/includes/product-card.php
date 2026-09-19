@@ -11,7 +11,7 @@ $onSale = !empty($product['compare_at_price']) && (float) $product['compare_at_p
 $outOfStock = (int) $product['stock'] <= 0;
 $rating = (float) ($product['avg_rating'] ?? 0);
 $reviewCount = (int) ($product['review_count'] ?? 0);
-$inWishlist = isCustomerLoggedIn() && isInWishlist($pdo, (int) $_SESSION['user_id'], (int) $product['id']);
+$inWishlist = isCustomerLoggedIn() && wishlistCardContains($pdo, (int) $_SESSION['user_id'], (int) $product['id']);
 ?>
 <div class="product-card">
   <div class="thumb-wrap">
@@ -20,7 +20,7 @@ $inWishlist = isCustomerLoggedIn() && isInWishlist($pdo, (int) $_SESSION['user_i
     <?php elseif (!empty($product['is_featured'])): ?><span class="badge">Featured</span>
     <?php endif; ?>
     <a href="<?= BASE_URL ?>/pages/product.php?slug=<?= h($product['slug']) ?>">
-      <img src="<?= h(productImageUrl($product['image'], $product['name'])) ?>" alt="<?= h($product['name']) ?>" loading="lazy">
+      <img src="<?= h(productImageUrl($product['image'], $product['name'], 600)) ?>" alt="<?= h($product['name']) ?>" loading="lazy" decoding="async">
     </a>
     <form action="<?= BASE_URL ?>/actions/toggle_wishlist.php" method="post">
       <?= csrfField() ?>

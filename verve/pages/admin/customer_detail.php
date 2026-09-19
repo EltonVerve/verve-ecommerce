@@ -8,14 +8,18 @@ if (!$customer || $customer['role'] !== 'customer') {
     exit('Customer not found.');
 }
 $activity = getCustomerActivity($pdo, (int) $customer['id']);
-$pageTitle = 'Customer activity';
+$pageTitle = 'Customer details';
 require __DIR__ . '/../../includes/admin/admin_header.php';
 ?>
-<div class="admin-topbar"><h1>Customer activity</h1><a class="btn btn-outline" href="<?= BASE_URL ?>/pages/admin/customers.php">Back to customers</a></div>
+<div class="admin-topbar"><h1>Customer details</h1><a class="btn btn-outline" href="<?= BASE_URL ?>/pages/admin/customers.php">Back to customers</a></div>
 <div class="admin-card">
   <h2><?= h($customer['full_name']) ?></h2>
-  <p><?= h($customer['email']) ?> &middot; <?= h($customer['phone'] ?: 'No phone number') ?></p>
-  <p>Joined <?= h($customer['created_at']) ?></p>
+  <dl class="customer-info">
+    <div><dt>Customer ID</dt><dd>#<?= (int) $customer['id'] ?></dd></div>
+    <div><dt>Email address</dt><dd><?= h($customer['email']) ?></dd></div>
+    <div><dt>Phone number</dt><dd><?= h($customer['phone'] ?: 'Not provided') ?></dd></div>
+    <div><dt>Date joined</dt><dd><?= h(date('M j, Y, g:i a', strtotime($customer['created_at']))) ?></dd></div>
+  </dl>
   <p><?= (int) $activity['summary']['order_count'] ?> orders &middot; <?= money((float) $activity['summary']['order_value']) ?> in non-cancelled orders</p>
 </div>
 <p class="muted">Latest 100 entries per section. Wishlist and cart show currently saved items; removed items and browsing history are not recorded.</p>

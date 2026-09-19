@@ -11,6 +11,7 @@ require __DIR__ . '/../../includes/admin/admin_flash.php';
 ?>
 
 <div class="admin-topbar"><h1>Customers</h1></div>
+<p class="muted">Select a customer's name or View customer to see their profile and activity.</p>
 
 <div class="admin-toolbar">
   <form class="admin-search" method="get">
@@ -22,7 +23,7 @@ require __DIR__ . '/../../includes/admin/admin_flash.php';
 
 <div class="admin-card">
   <table class="admin-table">
-    <thead><tr><th>Name</th><th>Email</th><th>Orders</th><th>Total spent</th><th>Joined</th><th></th></tr></thead>
+    <thead><tr><th>Name</th><th>Email</th><th>Orders</th><th>Total spent</th><th>Joined</th><th>Actions</th></tr></thead>
     <tbody>
       <?php foreach ($customers as $c): ?>
         <tr>
@@ -32,11 +33,15 @@ require __DIR__ . '/../../includes/admin/admin_flash.php';
           <td><?= money((float) $c['total_spent']) ?></td>
           <td><?= date('M j, Y', strtotime($c['created_at'])) ?></td>
           <td>
+            <a class="btn btn-primary btn-sm" href="<?= BASE_URL ?>/pages/admin/customer_detail.php?id=<?= (int) $c['id'] ?>" aria-label="View customer: <?= h($c['full_name']) ?>">View customer</a>
+            <details style="margin-top:.75rem;">
+              <summary>Change account role</summary>
             <form action="<?= BASE_URL ?>/actions/admin/promote_customer.php" method="post" onsubmit="return confirm('Make this account an admin?');">
               <?= csrfField() ?>
               <input type="hidden" name="id" value="<?= (int) $c['id'] ?>">
               <input type="password" name="current_password" required autocomplete="current-password" placeholder="Your admin password" aria-label="Your admin password"><button type="submit" class="btn btn-outline btn-sm">Make admin</button>
             </form>
+            </details>
           </td>
         </tr>
       <?php endforeach; ?>

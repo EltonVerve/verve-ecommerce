@@ -15,7 +15,7 @@
 
 // The shop page's main product listing, with category, price-range,
 // search and sort all handled in one place so shop.php stays simple.
-function getShopProducts(PDO $pdo, array $filters = []): array {
+function getShopProducts(PDO $pdo, array $filters = [], ?array &$pagination = null): array {
     $where  = ['p.is_active = 1'];
     $params = [];
 
@@ -49,6 +49,13 @@ function getShopProducts(PDO $pdo, array $filters = []): array {
         default      => 'p.created_at DESC',
     };
 
+    $count = $pdo->prepare('SELECT COUNT(*) FROM products p JOIN categories c ON c.id = p.category_id WHERE ' . implode(' AND ', $where));
+    $count->execute($params);
+    $total = (int) $count->fetchColumn();
+    $pages = max(1, (int) ceil($total / 24));
+    $page = min($pages, max(1, (int) ($filters['page'] ?? 1)));
+    $pagination = ['total' => $total, 'page' => $page, 'pages' => $pages];
+    $offset = ($page - 1) * 24;
     $sql = "
         SELECT p.*, c.name AS category_name, c.slug AS category_slug,
                COALESCE((SELECT AVG(rating) FROM reviews r WHERE r.product_id = p.id), 0) AS avg_rating,
@@ -56,7 +63,8 @@ function getShopProducts(PDO $pdo, array $filters = []): array {
         FROM products p
         JOIN categories c ON c.id = p.category_id
         WHERE " . implode(' AND ', $where) . "
-        ORDER BY $orderBy
+        ORDER BY $orderBy, p.id DESC
+        LIMIT 24 OFFSET $offset
     ";
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
@@ -102,7 +110,7 @@ function getRelatedProducts(PDO $pdo, int $categoryId, int $excludeProductId, in
         FROM products p
         JOIN categories c ON c.id = p.category_id
         WHERE p.is_active = 1 AND p.category_id = ? AND p.id != ?
-        ORDER BY RAND()
+        ORDER BY p.created_at DESC, p.id DESC
         LIMIT ?
     ");
     $stmt->bindValue(1, $categoryId, PDO::PARAM_INT);

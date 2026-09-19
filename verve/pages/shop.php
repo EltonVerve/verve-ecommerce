@@ -25,7 +25,8 @@ $products = getShopProducts($pdo, [
     'max_price' => $maxPrice,
     'in_stock_only' => $inStockOnly,
     'sort' => $sort,
-]);
+    'page' => filter_var($_GET['page'] ?? 1, FILTER_VALIDATE_INT) ?: 1,
+], $pagination);
 $categories = getCategoriesWithProductCounts($pdo);
 $priceBounds = getPriceBounds($pdo);
 
@@ -38,6 +39,7 @@ require __DIR__ . '/../includes/flash.php';
 // or clearing a single filter.
 function shopUrlWith(array $overrides): string {
     $params = array_merge($_GET, $overrides);
+    if (!array_key_exists('page', $overrides)) unset($params['page']);
     foreach ($overrides as $k => $v) {
         if ($v === null) unset($params[$k]);
     }
@@ -108,7 +110,7 @@ function shopUrlWith(array $overrides): string {
       <?php endif; ?>
 
       <div class="shop-toolbar">
-        <span class="result-count"><?= count($products) ?> product<?= count($products) === 1 ? '' : 's' ?></span>
+        <span class="result-count"><?= $pagination['total'] ?> products<?= $pagination['total'] ? ' · Page ' . $pagination['page'] . ' of ' . $pagination['pages'] : '' ?></span>
         <form method="get" id="sortForm">
           <?php foreach (['cat' => $catSlug, 'q' => $query, 'min_price' => $minPrice, 'max_price' => $maxPrice, 'in_stock' => $inStockOnly ? '1' : ''] as $k => $v): ?>
             <?php if ($v !== ''): ?><input type="hidden" name="<?= $k ?>" value="<?= h($v) ?>"><?php endif; ?>
@@ -135,6 +137,13 @@ function shopUrlWith(array $overrides): string {
             <?php require __DIR__ . '/../includes/product-card.php'; ?>
           <?php endforeach; ?>
         </div>
+      <?php endif; ?>
+      <?php if ($pagination['pages'] > 1): ?>
+        <nav class="shop-pagination" aria-label="Product pages">
+          <?php if ($pagination['page'] > 1): ?><a class="btn btn-outline btn-sm" rel="prev" href="<?= h(shopUrlWith(['page' => $pagination['page'] - 1])) ?>#shop-products">&larr; Previous</a><?php endif; ?>
+          <span>Page <?= $pagination['page'] ?> of <?= $pagination['pages'] ?></span>
+          <?php if ($pagination['page'] < $pagination['pages']): ?><a class="btn btn-primary btn-sm" rel="next" href="<?= h(shopUrlWith(['page' => $pagination['page'] + 1])) ?>#shop-products">Next &rarr;</a><?php endif; ?>
+        </nav>
       <?php endif; ?>
     </div>
   </div>

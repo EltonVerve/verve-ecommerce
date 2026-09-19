@@ -2,6 +2,21 @@
 
 The application has not been deployed. Hosting provider and domain are still needed.
 
+## Performance setup
+
+- Run `php sql/install_performance_indexes.php` once per database (safe to rerun). Back up first and schedule index creation off-peak on a large live database.
+- Deploy `public/assets/products/optimized/` alongside the originals. Run `php sql/optimize_images.php` with GD/WebP enabled after adding or replacing product photos; XAMPP CLI can use `php -d extension=gd sql/optimize_images.php`. Conversion runs offline, never during a shopper's request. Missing or older variants fall back to the original image. Preserve modification times when uploading, or regenerate on the server.
+- Apache asset caching/compression is configured in `public/assets/.htaccess` when the corresponding modules and overrides are enabled. Configure equivalent rules on other servers. Account/cart HTML stays private and uncached. Replacing an image with the same filename can leave a cached copy for seven days; prefer new upload filenames.
+- Enable PHP OPcache in the host configuration and monitor PHP worker capacity, query latency and slow-query logs. Verify these settings on the actual host; they cannot be enabled reliably by this repository alone.
+- Catalogue pages contain 24 products with filters preserved between pages. Related products use newest-first ordering instead of random database sorting. Text search still uses substring matching to preserve existing behavior; consider full-text search after measuring large-catalogue workloads.
+- Test with `php tests/catalogue_performance.php`. Compare mobile page-load measurements on the deployment host; smaller assets are not a measured guarantee of a particular loading time. Mail delivery remains synchronous until a worker/queue is configured.
+
+## Customer email-first sign-in
+
+Run `php sql/install_customer_login_codes.php` before enabling email-code login. Without `VERVE_MAIL_FROM`, customers enter their email, then their existing password. Once a verified sending address and working PHP mail transport are configured, the default becomes email followed by a six-digit code. Test delivery with a real mailbox before enabling it publicly; a configured address alone does not prove delivery. Existing password login remains available as a fallback. Registration and profile password requirements are unchanged.
+
+Codes expire after 10 minutes, allow five guesses, are stored as password hashes, are bound to the requesting browser session, and are consumed atomically. Resending replaces that browser's previous code. Send and verification endpoints have database rate limits; account existence is not disclosed in the response. Codes are never printed or logged. Admin login remains password-based.
+
 Customer logins persist across browser restarts for 30 days of inactivity, renewed on each visit and enforced by both the database and cookie. Logout and password changes invalidate remembered logins. Admins must sign in again after 30 minutes of inactivity. Current passwords remain required for profile edits.
 
 When upgrading, run `php sql/install_customer_sessions.php` before serving the updated application. This idempotent migration adds server-side expiry. Existing remembered logins without an expiry and existing admin sessions without an activity timestamp require one fresh sign-in.

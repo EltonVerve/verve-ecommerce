@@ -10,7 +10,7 @@ $heroSlides = [
     <div class="carousel-slides">
       <?php foreach ($heroSlides as $index => $slide): ?>
         <div class="carousel-slide carousel-<?= h($slide[8]) ?>" role="group" aria-roledescription="slide" aria-label="<?= $index + 1 ?> of <?= count($heroSlides) ?>: <?= h($slide[0]) ?>" <?= $index ? 'hidden' : '' ?>>
-          <img class="carousel-photo" src="<?= BASE_URL ?>/public/assets/products/<?= h($slide[6]) ?>" alt="" <?= $index === 0 ? 'fetchpriority="high"' : 'loading="lazy"' ?>>
+          <img class="carousel-photo" src="<?= h(productImageUrl($slide[6])) ?>" alt="" <?= $index === 0 ? 'fetchpriority="high"' : 'loading="lazy"' ?>>
           <div class="carousel-copy">
             <span class="carousel-eyebrow"><?= h($slide[0]) ?></span>
             <h2><?= h($slide[1]) ?><br><em><?= h($slide[2]) ?></em></h2>

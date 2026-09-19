@@ -68,8 +68,14 @@ function slugify(string $text): string {
 
 // Resolves a product/category image to a real file, or a
 // clean placeholder if none has been uploaded yet.
-function productImageUrl(?string $filename, string $label = 'Product'): string {
+function productImageUrl(?string $filename, string $label = 'Product', int $width = 1600): string {
     if ($filename) {
+        $variant = 'optimized/' . pathinfo(basename($filename), PATHINFO_FILENAME) . '-' . ($width <= 600 ? '600' : '1600') . '.webp';
+        $original = __DIR__ . '/../public/assets/products/' . $filename;
+        $optimized = __DIR__ . '/../public/assets/products/' . $variant;
+        if (is_file($optimized) && is_file($original) && filemtime($optimized) >= filemtime($original)) {
+            return BASE_URL . '/public/assets/products/' . $variant;
+        }
         $path = __DIR__ . '/../public/assets/products/' . $filename;
         if (is_file($path)) {
             return BASE_URL . '/public/assets/products/' . rawurlencode($filename);
