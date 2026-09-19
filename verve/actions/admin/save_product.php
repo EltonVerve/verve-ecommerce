@@ -114,6 +114,11 @@ $data = [
 
 try {
 $pdo->beginTransaction();
+$auditBefore = null;
+if ($productId) {
+    $stmt = $pdo->prepare('SELECT price,stock FROM products WHERE id=? FOR UPDATE');
+    $stmt->execute([$productId]); $auditBefore = $stmt->fetch();
+}
 if ($productId) {
     updateProduct($pdo, $productId, $data);
 } else {
@@ -131,6 +136,7 @@ foreach (($_POST['option_groups'] ?? []) as $group) {
     $groups[] = ['name' => $group['name'] ?? '', 'values' => $group['values'] ?? []];
 }
 replaceOptionGroups($pdo, $productId, $groups);
+auditAdmin($pdo, $existing ? 'product.updated' : 'product.created', 'product', $productId, ['before'=>$auditBefore, 'after'=>['price'=>$data['price'],'stock'=>$data['stock']]]);
 $pdo->commit();
 $uploadsCommitted = true;
 } catch (Throwable $error) {

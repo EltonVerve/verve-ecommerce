@@ -27,5 +27,5 @@ $_SESSION['user_name'] = $user['full_name'];
 $_SESSION['user_role'] = $user['role'];
 $_SESSION['admin_last_activity'] = time();
 
-header('Location: ' . BASE_URL . '/pages/admin/dashboard.php');
+header('Location: ' . BASE_URL . '/pages/admin/' . ($user['admin_scope'] === 'orders' ? 'orders.php' : 'dashboard.php'));
 exit;

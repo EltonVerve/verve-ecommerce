@@ -6,7 +6,7 @@ $pageTitle = 'Dashboard';
 $stats = getDashboardStats($pdo);
 $sales = getSalesOverTime($pdo, 14);
 $recentOrders = getRecentOrders($pdo, 6);
-$lowStock = getLowStockProducts($pdo, 5);
+$lowStock = getLowStockProducts($pdo, lowStockThreshold($pdo));
 $topSelling = getTopSellingProducts($pdo, 5);
 
 require __DIR__ . '/../../includes/admin/admin_header.php';
@@ -51,7 +51,7 @@ require __DIR__ . '/../../includes/admin/admin_flash.php';
   </div>
 
   <div class="admin-card">
-    <h2>Low stock</h2>
+    <h2>Low stock</h2><a href="stock.php">View all alerts and set threshold</a>
     <table class="admin-table">
       <thead><tr><th>Product</th><th>Stock</th></tr></thead>
       <tbody>

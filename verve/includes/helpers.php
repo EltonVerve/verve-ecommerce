@@ -34,6 +34,11 @@ function requireAdmin(): void {
         header('Location: ' . BASE_URL . '/pages/admin/login.php');
         exit;
     }
+    global $pdo;
+    if (!adminRouteAllowed(adminScope($pdo), basename($_SERVER['SCRIPT_NAME'] ?? ''))) {
+        http_response_code(403);
+        exit('Your staff account does not have permission to access this section.');
+    }
 }
 
 // Guests get a cart too — this gives every visitor a unique

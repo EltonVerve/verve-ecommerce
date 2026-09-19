@@ -6,7 +6,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $deleteZone = isset($_POST['delete_zone']);
     $id = (int) ($_POST['id'] ?? 0);
     if ($deleteZone && $id) {
+        $pdo->beginTransaction();
+        try {
+        $stmt=$pdo->prepare('SELECT * FROM delivery_zones WHERE id=? FOR UPDATE'); $stmt->execute([$id]); $before=$stmt->fetch();
         $pdo->prepare('UPDATE delivery_zones SET active = 0 WHERE id = ?')->execute([$id]);
+        auditAdmin($pdo,'delivery.deactivated','delivery_zone',$id,['before'=>$before]);
+        $pdo->commit();
+        } catch (Throwable $e) { $pdo->rollBack(); throw $e; }
         setFlash('success', 'Delivery area deactivated.');
         header('Location: ' . BASE_URL . '/pages/admin/delivery.php'); exit;
     }
@@ -32,8 +38,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($duplicateStmt->fetchColumn()) {
             setFlash('error', 'A delivery area with that name already exists.');
         } else {
+            $pdo->beginTransaction();
+            try {
+            $stmt=$pdo->prepare('SELECT * FROM delivery_zones WHERE id=? FOR UPDATE'); $stmt->execute([$id]); $before=$stmt->fetch();
             if ($id) $pdo->prepare('UPDATE delivery_zones SET name=?, country=?, fee=?, free_over=?, active=? WHERE id=?')->execute([$name,$country,$fee,$free,isset($_POST['active']) ? 1 : 0,$id]);
             else $pdo->prepare('INSERT INTO delivery_zones (name,country,fee,free_over,active) VALUES (?,?,?,?,?)')->execute([$name,$country,$fee,$free,isset($_POST['active']) ? 1 : 0]);
+            $savedId=$id ?: (int)$pdo->lastInsertId();
+            auditAdmin($pdo,'delivery.saved','delivery_zone',$savedId,['before'=>$before,'after'=>['name'=>$name,'country'=>$country,'fee'=>$fee,'free_over'=>$free,'active'=>isset($_POST['active'])]]);
+            $pdo->commit();
+            } catch (Throwable $e) { $pdo->rollBack(); throw $e; }
             setFlash('success', 'Delivery area saved.');
         }
     }

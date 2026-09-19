@@ -9,7 +9,7 @@ require __DIR__ . '/../../includes/admin/admin_flash.php';
 ?>
 <div class="profile-banner">
   <div><span class="profile-eyebrow">Account settings</span><h1>My profile</h1><p>A little about you. Everything you need to keep your account up to date.</p></div>
-  <span class="profile-role">Administrator</span>
+  <span class="profile-role"><?= $user['admin_scope']==='owner' ? 'Owner' : 'Order staff' ?></span>
 </div>
 <div class="admin-profile-layout">
   <aside class="admin-card profile-summary" aria-label="Account summary">
@@ -19,7 +19,7 @@ require __DIR__ . '/../../includes/admin/admin_flash.php';
     <dl>
       <div><dt>Member since</dt><dd><?= h(date('M j, Y', strtotime($user['created_at']))) ?></dd></div>
       <div><dt>Phone number</dt><dd><?= h($user['phone'] ?: 'Not added yet') ?></dd></div>
-      <div><dt>Account role</dt><dd>Administrator</dd></div>
+      <div><dt>Account role</dt><dd><?= $user['admin_scope']==='owner' ? 'Owner' : 'Order staff' ?></dd></div>
     </dl>
     <div class="profile-security-note"><strong>Your account, protected</strong><p>For your security, your session ends after 30 minutes of inactivity.</p></div>
   </aside>

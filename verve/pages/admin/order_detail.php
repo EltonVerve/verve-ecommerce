@@ -18,10 +18,11 @@ require __DIR__ . '/../../includes/admin/admin_flash.php';
 
 <div class="admin-topbar">
   <h1>Order #<?= (int) $order['id'] ?></h1>
+  <a href="<?= BASE_URL ?>/pages/admin/order_print.php?id=<?= (int)$order['id'] ?>" class="btn btn-primary btn-sm" target="_blank" rel="noopener">Print packing slip</a>
   <a href="<?= BASE_URL ?>/pages/admin/orders.php" class="btn btn-outline btn-sm">← Back to orders</a>
 </div>
 
-<div style="display:grid; grid-template-columns:1.4fr 1fr; gap:1.6rem; align-items:start;">
+<div class="operations-grid">
   <div class="admin-card">
     <h2>Items</h2>
     <table class="admin-table">
@@ -69,14 +70,16 @@ require __DIR__ . '/../../includes/admin/admin_flash.php';
         <button type="submit" class="btn btn-primary">Save status</button>
       </form>
       <hr class="divider"><h2>Payment collection</h2>
-      <p>Current: <?= h(ucfirst($order['payment_status'])) ?></p>
+      <p>Current: <?= h(ucwords(str_replace('_',' ',$order['payment_status']))) ?></p>
+      <?php if (!in_array($order['payment_status'], ['refunded','part_refunded'], true)): ?>
       <form action="<?= BASE_URL ?>/actions/admin/update_order_status.php" method="post">
         <?= csrfField() ?><input type="hidden" name="order_id" value="<?= (int) $order['id'] ?>"><input type="hidden" name="operation" value="payment">
         <label for="payment-status">Payment status</label><select id="payment-status" name="status">
-        <?php foreach (array_unique([$order['payment_status'], 'unpaid','collected','refunded']) as $payment): ?><option value="<?= h($payment) ?>" <?= $payment === $order['payment_status'] ? 'selected' : '' ?>><?= h(ucfirst($payment)) ?></option><?php endforeach; ?>
-        </select><p class="hint">Mark collected only after receiving the full payment. Refunded records money actually returned.</p>
+        <?php foreach (array_unique([$order['payment_status'], 'unpaid','collected']) as $payment): ?><option value="<?= h($payment) ?>" <?= $payment === $order['payment_status'] ? 'selected' : '' ?>><?= h(ucwords(str_replace('_',' ',$payment))) ?></option><?php endforeach; ?>
+        </select><p class="hint">Mark collected only after receiving the full payment. Owners can record refunds below.</p>
         <button class="btn btn-primary" type="submit">Save payment</button>
       </form>
+      <?php endif; ?>
       <?php require __DIR__ . '/../../includes/order-tracking.php'; ?>
     </div>
 
@@ -85,6 +88,11 @@ require __DIR__ . '/../../includes/admin/admin_flash.php';
       <p><?= h($order['customer_name']) ?><br>
       <?= h($order['customer_email']) ?><br>
       <?= h($order['customer_phone'] ?? '') ?></p>
+      <div class="admin-toolbar">
+      <?php $contactPhone=preg_replace('/[^0-9+]/','',$order['customer_phone'] ?? ''); ?>
+      <?php if (preg_match('/^\+?[0-9]{9,15}$/D',$contactPhone)): ?><a class="btn btn-outline btn-sm" href="tel:<?= h($contactPhone) ?>">Call customer</a><?php endif; ?>
+      <?php if (filter_var($order['customer_email'],FILTER_VALIDATE_EMAIL)): ?><a class="btn btn-outline btn-sm" href="mailto:<?= h($order['customer_email']) ?>">Email customer</a><?php endif; ?>
+      </div>
       <p class="muted small">Payment method: <?= h(ucwords(str_replace('_', ' ', $order['payment_method'] ?? ''))) ?></p>
     </div>
 
@@ -102,4 +110,18 @@ require __DIR__ . '/../../includes/admin/admin_flash.php';
   </div>
 </div>
 
+<?php require __DIR__ . '/../../includes/admin/order-operations.php'; ?>
+<section class="admin-card" id="staff-notes">
+  <h2>Internal order notes</h2><p class="hint">For staff handovers, customer call outcomes and delivery issues. These notes are visible only in admin. Latest 100 notes shown.</p>
+  <form method="post" action="<?= BASE_URL ?>/actions/admin/order_note.php">
+    <?= csrfField() ?><input type="hidden" name="order_id" value="<?= $orderId ?>"><input type="hidden" name="request_key" value="<?= bin2hex(random_bytes(32)) ?>">
+    <div class="field"><label for="staff-note">Add a note</label><textarea id="staff-note" name="note" maxlength="1000" rows="3" required></textarea></div>
+    <button class="btn btn-primary">Save note</button>
+  </form>
+  <?php $staffNotes=getOrderStaffNotes($pdo,$orderId); ?>
+  <?php foreach ($staffNotes as $note): $details=json_decode($note['details'],true); ?>
+  <article class="order-staff-note"><strong><?= h($note['full_name'] ?? 'Former staff member') ?></strong> <span class="muted small"><?= h($note['created_at']) ?></span><p><?= nl2br(h($details['note'] ?? '')) ?></p></article>
+  <?php endforeach; ?>
+  <?php if (!$staffNotes): ?><p class="muted">No internal notes yet.</p><?php endif; ?>
+</section>
 <?php require __DIR__ . '/../../includes/admin/admin_footer.php'; ?>

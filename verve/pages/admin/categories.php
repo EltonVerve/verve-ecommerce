@@ -39,7 +39,7 @@ require __DIR__ . '/../../includes/admin/admin_flash.php';
 
   <div class="admin-card">
     <h2><?= $editCategory ? 'Edit category' : 'New category' ?></h2>
-    <form action="<?= BASE_URL ?>/actions/admin/save_category.php" method="post">
+    <form action="<?= BASE_URL ?>/actions/admin/save_category.php" method="post" enctype="multipart/form-data">
       <?= csrfField() ?>
       <?php if ($editCategory): ?><input type="hidden" name="id" value="<?= (int) $editCategory['id'] ?>"><?php endif; ?>
       <div class="field">
@@ -49,6 +49,15 @@ require __DIR__ . '/../../includes/admin/admin_flash.php';
       <div class="field">
         <label for="description">Description</label>
         <textarea id="description" name="description"><?= h($editCategory['description'] ?? '') ?></textarea>
+      </div>
+      <div class="field">
+        <label for="image">Main photo</label>
+        <input type="file" id="image" name="image" accept="image/jpeg,image/png,image/webp" <?= $editCategory ? '' : 'required' ?>>
+        <?php if (!empty($editCategory['image'])): ?>
+          <div style="margin-top:.75rem;">
+            <img src="<?= h(productImageUrl($editCategory['image'], $editCategory['name'] ?? 'Category', 300)) ?>" alt="<?= h($editCategory['name'] ?? 'Category') ?>" width="120" height="120" style="border-radius:12px;object-fit:cover;">
+          </div>
+        <?php endif; ?>
       </div>
       <button type="submit" class="btn btn-primary btn-block"><?= $editCategory ? 'Save changes' : 'Create category' ?></button>
       <?php if ($editCategory): ?><a href="<?= BASE_URL ?>/pages/admin/categories.php" class="btn btn-ghost btn-block" style="margin-top:.5rem;">Cancel</a><?php endif; ?>

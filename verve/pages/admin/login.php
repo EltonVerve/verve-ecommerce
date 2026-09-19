@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../../config/config.php';
 if (isLoggedIn() && ($_SESSION['user_role'] ?? '') === 'admin') {
-    header('Location: ' . BASE_URL . '/pages/admin/dashboard.php');
+    header('Location: ' . BASE_URL . '/pages/admin/' . (adminScope($pdo) === 'owner' ? 'dashboard.php' : 'orders.php'));
     exit;
 }
 $pageTitle = 'Admin Login';

@@ -48,15 +48,34 @@ function getAllCategoriesWithCounts(PDO $pdo): array {
     ")->fetchAll();
 }
 
-function createCategory(PDO $pdo, string $name, string $slug, string $description): int {
-    $stmt = $pdo->prepare("INSERT INTO categories (name, slug, description) VALUES (?, ?, ?)");
-    $stmt->execute([$name, $slug, $description]);
+function resolveCategoryImageFilename(?string $image, string $slug): ?string {
+    $candidates = [];
+    if (is_string($image) && trim($image) !== '') {
+        $candidates[] = trim($image);
+    }
+    if ($slug !== '') {
+        $candidates[] = 'category-' . $slug . '.png';
+    }
+
+    foreach ($candidates as $candidate) {
+        $path = __DIR__ . '/../public/assets/products/' . $candidate;
+        if ($candidate !== '' && is_file($path)) {
+            return $candidate;
+        }
+    }
+
+    return null;
+}
+
+function createCategory(PDO $pdo, string $name, string $slug, string $description, ?string $image = null): int {
+    $stmt = $pdo->prepare("INSERT INTO categories (name, slug, description, image) VALUES (?, ?, ?, ?)");
+    $stmt->execute([$name, $slug, $description, $image]);
     return (int) $pdo->lastInsertId();
 }
 
-function updateCategory(PDO $pdo, int $id, string $name, string $slug, string $description): void {
-    $stmt = $pdo->prepare("UPDATE categories SET name = ?, slug = ?, description = ? WHERE id = ?");
-    $stmt->execute([$name, $slug, $description, $id]);
+function updateCategory(PDO $pdo, int $id, string $name, string $slug, string $description, ?string $image = null): void {
+    $stmt = $pdo->prepare("UPDATE categories SET name = ?, slug = ?, description = ?, image = ? WHERE id = ?");
+    $stmt->execute([$name, $slug, $description, $image, $id]);
 }
 
 // Turns a category name into a unique slug — if it's already

@@ -92,6 +92,7 @@ function getAllCustomersWithStats(PDO $pdo, string $search = ''): array {
 // from changing their OWN role.
 function setUserRole(PDO $pdo, int $userId, string $role): void {
     if (!in_array($role, ['customer', 'admin'], true)) return;
-    $stmt = $pdo->prepare("UPDATE users SET role = ? WHERE id = ?");
-    $stmt->execute([$role, $userId]);
+    $user = findUserById($pdo, $userId);
+    if (!$user) throw new RuntimeException('Account not found.');
+    changeStaffAccess($pdo, $user['email'], $role === 'admin' ? 'owner' : 'customer');
 }

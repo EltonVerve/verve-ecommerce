@@ -46,7 +46,9 @@ try {
     assertOperation((int) $stmt->fetchColumn() === 1, 'Cancellation restores stock only once');
     $stmt = $pdo->prepare('SELECT payment_status FROM orders WHERE id=?'); $stmt->execute([$order]);
     assertOperation($stmt->fetchColumn() === 'collected', 'Cancellation must not silently refund payment');
-    changeOrderOperation($pdo,$order,'payment','refunded',0);
+    $_SESSION['user_id'] = $ids[0];
+    $refundOrder = getOrderWithItemsAdmin($pdo,$order);
+    recordOrderRefund($pdo,$order,(string)$refundOrder['total'],'Test refund','TEST-REFUND',bin2hex(random_bytes(32)));
     assertOperation(count(getOrderEvents($pdo,$order)) === 3, 'History records actual changes only');
     try { changeOrderOperation($pdo,$order,'delivery','pending',0); throw new LogicException('Cancelled order reopened'); } catch (RuntimeException $expected) {}
     assertOperation(getOrderWithItems($pdo,$order,999999999) === null, 'Tracking must enforce ownership');
@@ -55,6 +57,8 @@ try {
     echo "PASS: concurrent checkout, no overselling, one-time restock, independent payment, audit history, terminal cancellation, ownership and zone pricing.\n";
 } finally {
     foreach ($ids as $id) {
+        $pdo->prepare('DELETE FROM admin_audit WHERE actor_id=?')->execute([$id]);
+        $pdo->prepare("DELETE FROM admin_audit WHERE entity_type='order' AND entity_id IN (SELECT id FROM orders WHERE user_id=?)")->execute([$id]);
         $pdo->prepare('DELETE FROM orders WHERE user_id=?')->execute([$id]);
         $pdo->prepare('DELETE FROM users WHERE id=?')->execute([$id]);
     }

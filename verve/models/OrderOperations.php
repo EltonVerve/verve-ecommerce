@@ -24,12 +24,13 @@ function changeOrderOperation(PDO $pdo, int $id, string $type, string $value, in
             }
         } else {
             if ($value === 'collected' && $order['status'] === 'cancelled') throw new RuntimeException('Cannot collect payment on a cancelled order.');
-            if ($value === 'refunded' && $old !== 'collected') throw new RuntimeException('Only collected payments can be marked refunded.');
+            if ($value === 'refunded') throw new RuntimeException('Use Record refund to enter the amount and payment reference.');
             if ($value === 'unpaid' && $old !== 'unknown') throw new RuntimeException('Use refunded to record money returned.');
-            if ($old === 'refunded') throw new RuntimeException('Refunded payments cannot be reopened.');
+            if (in_array($old, ['refunded','part_refunded'], true)) throw new RuntimeException('Refunded payments cannot be reopened.');
         }
         $pdo->prepare("UPDATE orders SET $column = ? WHERE id = ?")->execute([$value, $id]);
         $pdo->prepare('INSERT INTO order_events (order_id, actor_id, event_type, old_value, new_value) VALUES (?, ?, ?, ?, ?)')->execute([$id, $actor, $type, $old, $value]);
+        auditAdmin($pdo, 'order.' . $type, 'order', $id, ['before'=>$old, 'after'=>$value]);
         $pdo->commit();
     } catch (Throwable $error) { if ($pdo->inTransaction()) $pdo->rollBack(); throw $error; }
 }
