@@ -51,17 +51,17 @@ require __DIR__ . '/../includes/flash.php';
 
 <div class="shell section">
   <h1>Checkout</h1>
-  <form method="get" class="form-card" style="margin-bottom:1rem;">
-    <label for="delivery-zone">Delivery area</label>
-    <select id="delivery-zone" name="zone" required>
-      <?php foreach ($zones as $available): ?><option value="<?= (int) $available['id'] ?>" <?= (int) $available['id'] === $zoneId ? 'selected' : '' ?>><?= h($available['name']) ?>, <?= h($available['country']) ?></option><?php endforeach; ?>
-    </select><button type="submit" class="btn btn-outline btn-sm">Update delivery fee</button>
-    <p class="hint"><?= $zone ? h($zone['name']) . ': ' . money((float) $zone['fee']) . ($zone['free_over'] !== null ? ', free from ' . money((float) $zone['free_over']) : '') : 'No available delivery area selected. Ordering is unavailable.' ?></p>
-  </form>
   <div class="checkout-layout">
     <form action="<?= BASE_URL ?>/actions/place_order.php" method="post">
       <?= csrfField() ?>
-      <input type="hidden" name="delivery_zone_id" value="<?= (int) ($zone['id'] ?? 0) ?>">
+      <div class="form-card" style="margin-bottom:1.5rem;">
+  <h2 style="font-size:1.1rem;">Delivery location</h2>
+  <label for="delivery-location">Delivery town or city</label>
+  <input type="text" id="delivery-location" name="delivery_location" list="delivery-locations" value="<?= h($zone['name'] ?? '') ?>" maxlength="100" placeholder="e.g. Nairobi, CBD or Mombasa" autocomplete="off" required aria-describedby="delivery-help">
+  <datalist id="delivery-locations"><?php foreach ($zones as $available): ?><option value="<?= h($available['name']) ?>"><?= (float) $available['fee'] === 0.0 ? 'Free delivery' : money((float) $available['fee']) ?></option><?php endforeach; ?></datalist>
+  <p id="delivery-help" class="hint" aria-live="polite">Start typing and choose an area. Nairobi CBD delivery is free.</p>
+  <noscript><p>JavaScript is required to preview delivery prices. Enable it before placing your order.</p></noscript>
+</div>
 
       <div class="form-card" style="margin-bottom:1.5rem;">
         <h2 style="font-size:1.1rem;">Contact</h2>
@@ -87,10 +87,7 @@ require __DIR__ . '/../includes/flash.php';
           <input type="text" id="line2" name="line2" value="<?= h($prefill['line2'] ?? '') ?>">
         </div>
         <div class="form-grid">
-          <div class="field">
-            <label for="city">City</label>
-            <input type="text" id="city" name="city" required value="<?= h($prefill['city']) ?>">
-          </div>
+          
           <div class="field">
             <label for="state">State / Region</label>
             <input type="text" id="state" name="state" value="<?= h($prefill['state'] ?? '') ?>">
@@ -118,7 +115,7 @@ require __DIR__ . '/../includes/flash.php';
         <p class="hint">Payment is collected on delivery.</p>
       </div>
 
-      <button type="submit" class="btn btn-primary btn-block" style="margin-top:1.5rem;">Place order — <?= money($total) ?></button>
+      <button id="place-order" disabled type="submit" class="btn btn-primary btn-block" style="margin-top:1.5rem;">Place order — <?= money($total) ?></button>
     </form>
 
     <div class="summary-card">
@@ -133,10 +130,12 @@ require __DIR__ . '/../includes/flash.php';
       <?php if ($appliedCoupon): ?>
         <div class="summary-row"><span>Discount</span><span>&minus;<?= money($discount) ?></span></div>
       <?php endif; ?>
-      <div class="summary-row"><span>Shipping</span><span><?= $shipping > 0 ? money($shipping) : 'Free' ?></span></div>
-      <div class="summary-row total"><span>Total</span><span><?= money($total) ?></span></div>
+      <div class="summary-row"><span>Shipping</span><span id="delivery-fee" aria-live="polite"><?= $zone ? ($shipping > 0 ? money($shipping) : 'Free') : 'Select location' ?></span></div>
+      <div class="summary-row total"><span>Total</span><span id="checkout-total" aria-live="polite"><?= money($total) ?><?= $zone ? '' : ' + delivery' ?></span></div>
     </div>
   </div>
 </div>
 
+<script type="application/json" id="delivery-pricing"><?= json_encode(['zones'=>$zones,'subtotal'=>$subtotal,'discount'=>$discount,'currency'=>STORE_CURRENCY_SYMBOL], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?></script>
+<script src="<?= BASE_URL ?>/public/assets/js/checkout-delivery.js"></script>
 <?php require __DIR__ . '/../includes/footer.php'; ?>

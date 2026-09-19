@@ -23,7 +23,9 @@ foreach (['full_name', 'line1', 'line2', 'city', 'state', 'postal_code', 'countr
 }
 $email = strtolower($text('email'));
 $paymentMethod = $text('payment_method');
-$addressData['delivery_zone_id'] = (int) ($_POST['delivery_zone_id'] ?? 0);
+$selectedZone = deliveryZoneForLocation($pdo, $text('delivery_location'));
+$addressData['delivery_zone_id'] = (int) ($selectedZone['id'] ?? 0);
+$addressData['city'] = $text('delivery_location');
 $addressData['phone'] = preg_replace('/[\s().-]+/', '', $addressData['phone']);
 
 $errors = [];

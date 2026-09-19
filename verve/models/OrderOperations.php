@@ -33,7 +33,38 @@ function changeOrderOperation(PDO $pdo, int $id, string $type, string $value, in
         $pdo->commit();
     } catch (Throwable $error) { if ($pdo->inTransaction()) $pdo->rollBack(); throw $error; }
 }
+function normalizeDeliveryLocationName(string $location): string {
+    $location = strtolower(trim($location));
+    $location = preg_replace('/[^\p{L}\p{N}]+/u', ' ', $location);
+    $location = preg_replace('/\s+/', ' ', $location);
+    $location = trim($location);
+    $aliases = [
+        'cbd' => 'nairobi cbd',
+        'central business district' => 'nairobi cbd',
+        'city centre' => 'nairobi cbd',
+        'nairobi city centre' => 'nairobi cbd',
+        'nairobi central business district' => 'nairobi cbd',
+        'nairobi cbd' => 'nairobi cbd',
+        'outside nairobi' => 'outside nairobi',
+        'out of nairobi' => 'outside nairobi',
+    ];
+    return $aliases[$location] ?? $location;
+}
 function deliveryZones(PDO $pdo): array { return $pdo->query('SELECT * FROM delivery_zones WHERE active = 1 ORDER BY name')->fetchAll(); }
+function deliveryZoneForLocation(PDO $pdo, string $location): ?array {
+    $location = normalizeDeliveryLocationName($location);
+    if (mb_strlen($location) < 2 || mb_strlen($location) > 100 || !preg_match('/\p{L}/u', $location)) return null;
+    $zones = deliveryZones($pdo);
+    foreach ($zones as $zone) {
+        if (normalizeDeliveryLocationName($zone['name']) === $location) return $zone;
+    }
+    // Explicitly configured inactive areas must not fall through to a cheaper/general rate.
+    $stmt = $pdo->prepare('SELECT id FROM delivery_zones WHERE LOWER(name) = ? AND active = 0');
+    $stmt->execute([$location]);
+    if ($stmt->fetchColumn()) return null;
+    foreach ($zones as $zone) if (normalizeDeliveryLocationName($zone['name']) === 'outside nairobi') return $zone;
+    return null;
+}
 function deliveryQuote(PDO $pdo, int $zoneId, float $subtotal): array {
     $stmt = $pdo->prepare('SELECT * FROM delivery_zones WHERE id = ? AND active = 1'); $stmt->execute([$zoneId]); $zone = $stmt->fetch();
     if (!$zone) throw new RuntimeException('Please select an available delivery area.');
