@@ -105,10 +105,40 @@ body.admin-body {
 .profile-save { border-top: 3px solid #087f78; }
 .profile-save-actions { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--line-soft); }
 .profile-save-actions span { color: var(--ink-soft); font-size: .78rem; }
+.delivery-zone-form { display: flex; flex-direction: column; gap: 1rem; }
+.delivery-zone-form .form-grid { margin-top: .2rem; }
+.delivery-form-actions {
+  display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;
+  margin-top: .2rem; padding-top: 1rem; border-top: 1px solid var(--line-soft);
+}
+.delivery-toggle { display: inline-flex; align-items: center; gap: .55rem; color: var(--ink-soft); font-weight: 600; font-size: .86rem; }
+.delivery-toggle input[type="checkbox"] { width: auto; accent-color: var(--accent); }
+.delivery-button-group {
+  display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; justify-content: flex-end;
+}
+#add-delivery-zone {
+  display: inline-flex; align-items: center; justify-content: center; gap: .45rem;
+  min-width: 120px; box-shadow: 0 10px 22px rgba(8, 127, 120, .18);
+}
+#add-delivery-zone:hover { box-shadow: 0 14px 26px rgba(8, 127, 120, .24); }
+.btn-danger {
+  background: #fff; color: var(--error); border-color: #f0c5c2;
+}
+.btn-danger:hover {
+  background: var(--error-soft); color: var(--error);
+}
+.muted { color: var(--ink-soft); }
+.delivery-zone-form .btn {
+  min-width: 170px; box-shadow: 0 12px 24px rgba(8, 127, 120, .18);
+}
+.delivery-zone-form .btn:hover {
+  box-shadow: 0 16px 28px rgba(8, 127, 120, .25);
+}
 @media (max-width: 720px) {
   .profile-banner { padding: 1.4rem; align-items: flex-start; flex-direction: column; }
   .admin-profile-layout, .profile-fields { grid-template-columns: 1fr; }
-  .profile-save-actions .btn { width: 100%; }
+  .profile-save-actions .btn, .delivery-zone-form .btn { width: 100%; }
+  .delivery-form-actions { align-items: stretch; }
 }
 
 .product-image-previews { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1rem; margin-top: 1rem; }
