@@ -5,10 +5,15 @@
  * Collects (or reuses) a delivery address, shows the final
  * order summary, and lets the customer choose a payment
  * method before placing the order via actions/place_order.php.
- * Works for logged-in customers AND guests.
+ * Requires a signed-in customer account.
  * ---------------------------------------------------------
  */
 require_once __DIR__ . '/../config/config.php';
+if (!isCustomerLoggedIn()) {
+    $_SESSION['checkout_after_login'] = true;
+    setFlash('info', 'Please sign in or create an account to place your order.');
+    requireLogin();
+}
 
 $pageTitle = 'Checkout';
 $items = getCartItems($pdo);

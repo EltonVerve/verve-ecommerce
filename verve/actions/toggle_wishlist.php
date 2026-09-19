@@ -18,7 +18,7 @@ if (!isCustomerLoggedIn()) {
 }
 
 $product = getProductById($pdo, $productId);
-if (!$product) {
+if (!$product || !(int)$product['is_active']) {
     header('Location: ' . $redirect);
     exit;
 }

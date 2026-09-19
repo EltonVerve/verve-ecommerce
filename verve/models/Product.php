@@ -190,7 +190,7 @@ function getAllProductsAdmin(PDO $pdo, string $search = ''): array {
         $stmt = $pdo->prepare("
             SELECT p.*, c.name AS category_name
             FROM products p JOIN categories c ON c.id = p.category_id
-            WHERE p.name LIKE ?
+            WHERE p.name LIKE ? AND NOT EXISTS (SELECT 1 FROM product_submissions s WHERE s.product_id=p.id AND (s.status!='approved' OR s.target_id IS NOT NULL))
             ORDER BY p.created_at DESC
         ");
         $stmt->execute(['%' . $search . '%']);
@@ -198,6 +198,7 @@ function getAllProductsAdmin(PDO $pdo, string $search = ''): array {
         $stmt = $pdo->query("
             SELECT p.*, c.name AS category_name
             FROM products p JOIN categories c ON c.id = p.category_id
+            WHERE NOT EXISTS (SELECT 1 FROM product_submissions s WHERE s.product_id=p.id AND (s.status!='approved' OR s.target_id IS NOT NULL))
             ORDER BY p.created_at DESC
         ");
     }

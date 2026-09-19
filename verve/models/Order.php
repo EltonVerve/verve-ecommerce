@@ -26,6 +26,11 @@ function calculateShippingFee(float $subtotal): float {
  * Returns the new order's ID (and a guest access token, if any).
  */
 function createOrderFromCart(PDO $pdo, ?int $userId, array $address, string $email, string $paymentMethod, ?array $coupon = null): array {
+    if (!$userId || !isCustomerLoggedIn() || (int) $_SESSION['user_id'] !== $userId) {
+        throw new RuntimeException('Please sign in to a customer account before placing an order.');
+    }
+    $customer = findUserById($pdo, $userId);
+    if (!$customer || $customer['role'] !== 'customer') throw new RuntimeException('A valid customer account is required.');
     if ($paymentMethod !== 'cash_on_delivery' || !preg_match('/^\+?[0-9]{9,15}$/D', $address['phone'] ?? '')) throw new RuntimeException('A valid delivery phone and cash-on-delivery payment are required.');
     $pdo->beginTransaction();
     try {

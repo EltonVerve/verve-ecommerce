@@ -21,7 +21,7 @@ $options   = is_array($_POST['options'] ?? null) ? $_POST['options'] : [];
 $redirect  = is_string($_POST['redirect'] ?? null) && $_POST['redirect'] !== '' ? $_POST['redirect'] : (BASE_URL . '/pages/cart.php');
 
 $product = getProductById($pdo, $productId);
-if (!$product) {
+if (!$product || !(int)$product['is_active']) {
     setFlash('error', "That product couldn't be found.");
     header('Location: ' . BASE_URL . '/pages/shop.php');
     exit;

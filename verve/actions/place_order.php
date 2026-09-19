@@ -7,6 +7,7 @@
  * ---------------------------------------------------------
  */
 require_once __DIR__ . '/../config/config.php';
+requireLogin();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: ' . BASE_URL . '/pages/checkout.php');
@@ -45,7 +46,7 @@ if ($errors) {
 }
 
 $coupon = !empty($_SESSION['coupon_code']) ? findValidCoupon($pdo, $_SESSION['coupon_code']) : null;
-$userId = isCustomerLoggedIn() ? (int) $_SESSION['user_id'] : null;
+$userId = (int) $_SESSION['user_id'];
 
 try {
     $placed = createOrderFromCart($pdo, $userId, $addressData, $email, $paymentMethod, $coupon);

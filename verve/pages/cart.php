@@ -98,7 +98,7 @@ require __DIR__ . '/../includes/flash.php';
           <button type="submit" class="btn btn-outline btn-sm">Apply</button>
         </form>
 
-        <a href="<?= BASE_URL ?>/pages/checkout.php" class="btn btn-primary btn-block">Proceed to checkout</a>
+        <a href="<?= BASE_URL ?>/pages/checkout.php" class="btn btn-primary btn-block"><?= isCustomerLoggedIn() ? 'Proceed to checkout' : 'Sign in to checkout' ?></a>
       </div>
     </div>
   <?php endif; ?>

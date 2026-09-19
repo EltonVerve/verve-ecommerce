@@ -23,13 +23,13 @@ try {
         [$code,$html]=$request('/pages/admin/login.php'); accessCheck($code===200,'Login page renders');
         preg_match('/name="csrf_token" value="([^"]+)"/',$html,$match); accessCheck(isset($match[1]),'Login CSRF present');
         [$code]=$request('/actions/admin/login.php',['csrf_token'=>$match[1],'email'=>$email,'password'=>$password]); accessCheck($code===302,'Staff can log in');
-        foreach (['orders.php','order_detail.php?id='.$order,'order_print.php?id='.$order,'profile.php'] as $page) {
+        foreach (['product_submissions.php','product_form.php','orders.php','order_detail.php?id='.$order,'order_print.php?id='.$order,'profile.php'] as $page) {
             [$code,$html]=$request('/pages/admin/'.$page); accessCheck($code===200 && !str_contains($html,'Something went wrong') && !str_contains($html,'Warning:'),'Page renders: '.$scope.' '.$page);
         }
         foreach (['dashboard.php','stock.php','staff.php','audit.php','delivery.php'] as $page) {
             [$code,$html]=$request('/pages/admin/'.$page); accessCheck($code===($scope==='owner'?200:403),'Permission on '.$scope.' '.$page);
         }
-        foreach (['record_return.php','record_refund.php','save_product.php','promote_customer.php'] as $action) {
+        foreach (['record_return.php','record_refund.php','review_product.php','promote_customer.php'] as $action) {
             $post=$scope==='orders'?['csrf_token'=>$match[1],'order_id'=>$order]:[];
             [$code]=$request('/actions/admin/'.$action,$post); accessCheck($code===403,'Missing CSRF or staff privilege blocks '.$action);
         }

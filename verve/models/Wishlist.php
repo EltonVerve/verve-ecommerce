@@ -42,7 +42,7 @@ function getWishlistForUser(PDO $pdo, int $userId): array {
         FROM wishlist_items w
         JOIN products p ON p.id = w.product_id
         JOIN categories c ON c.id = p.category_id
-        WHERE w.user_id = ?
+        WHERE w.user_id = ? AND p.is_active = 1
         ORDER BY w.created_at DESC
     ");
     $stmt->execute([$userId]);

@@ -12,6 +12,11 @@ $id = (int) ($_POST['id'] ?? 0);
 $isActive = (bool) ($_POST['is_active'] ?? false);
 $pdo->beginTransaction();
 try {
+    $submission=productSubmission($pdo,$id,true);
+    if ($isActive && $submission && ($submission['status']!=='approved' || $submission['target_id'])) {
+        $pdo->rollBack(); setFlash('error','Use Product approvals to review this submission before publishing.');
+        header('Location: '.BASE_URL.'/pages/admin/product_submission.php?id='.$id); exit;
+    }
     $stmt=$pdo->prepare('SELECT is_active FROM products WHERE id=? FOR UPDATE'); $stmt->execute([$id]); $before=$stmt->fetchColumn();
     toggleProductActive($pdo, $id, $isActive);
     if ($before !== false) auditAdmin($pdo,'product.visibility','product',$id,['before'=>(bool)$before,'after'=>$isActive]);

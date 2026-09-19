@@ -15,10 +15,15 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 verifyCsrf();
+$staffProduct = adminScope($pdo) !== 'owner';
+$productReturnPage = $staffProduct ? 'product_submissions.php' : 'products.php';
 
 $productId = !empty($_POST['product_id']) ? (int) $_POST['product_id'] : null;
 $existing = $productId ? getProductById($pdo, $productId) : null;
 if ($productId && !$existing) { http_response_code(404); exit('Product not found.'); }
+$submission = $productId ? productSubmission($pdo, $productId) : null;
+try { if ($productId) assertSubmissionEditable($pdo, $submission); }
+catch (RuntimeException $e) { http_response_code(403); exit(h($e->getMessage())); }
 $existingImages = $productId ? productGalleryFiles($existing, getProductImages($pdo, $productId)) : [];
 
 $name = trim($_POST['name'] ?? '');
@@ -30,12 +35,18 @@ $sku = trim($_POST['sku'] ?? '') ?: null;
 $stock = (int) ($_POST['stock'] ?? 0);
 $isFeatured = isset($_POST['is_featured']) ? 1 : 0;
 $isActive = isset($_POST['is_active']) ? 1 : 0;
+if ($staffProduct || ($submission && ($submission['status'] !== 'approved' || $submission['target_id']))) { $isActive=0; $isFeatured=0; }
+$submitForReview = $staffProduct && ($_POST['workflow'] ?? '') === 'submit';
 
 $errors = [];
 if (strlen($name) < 2) $errors[] = 'Please enter a product name.';
 if ($price < 0) $errors[] = 'Price cannot be negative.';
 if ($categoryId <= 0) $errors[] = 'Please choose a category.';
 if ($stock < 0) $errors[] = 'Stock cannot be negative.';
+if (mb_strlen($name)>150 || mb_strlen($sku ?? '')>60 || !is_finite($price) || $price>99999999.99 || $stock>2147483647 || ($compareAtPrice!==null && (!is_finite($compareAtPrice) || $compareAtPrice<0 || $compareAtPrice>99999999.99))) $errors[]='Product details exceed the allowed limits.';
+$categoryCheck=$pdo->prepare('SELECT id FROM categories WHERE id=?'); $categoryCheck->execute([$categoryId]);
+if (!$categoryCheck->fetchColumn()) $errors[]='Choose an existing category.';
+if ($submitForReview && $description==='') $errors[]='Add a description before submitting for review.';
 
 if ($errors) {
     setFlash('error', $errors[0]);
@@ -90,6 +101,10 @@ try {
     exit;
 }
 $imageFilename = $orderedImages[0] ?? null;
+if ($submitForReview && !$imageFilename) {
+    setFlash('error','Add at least one photo before submitting for review.');
+    header('Location: ' . BASE_URL . '/pages/admin/product_form.php' . ($productId ? "?id=$productId" : '')); exit;
+}
 
 // ---- Slug: keep existing on edit unless the name changed ----
 if ($existing && $existing['name'] === $name) {
@@ -114,6 +129,12 @@ $data = [
 
 try {
 $pdo->beginTransaction();
+if ($productId) {
+    $lockedSubmission=productSubmission($pdo,$productId,true);
+    assertSubmissionEditable($pdo,$lockedSubmission);
+    if ($lockedSubmission && (int)($_POST['submission_version'] ?? 0)!==(int)$lockedSubmission['version']) throw new RuntimeException('This submission changed. Reload it before saving.');
+    if ($lockedSubmission && ($lockedSubmission['status']!=='approved' || $lockedSubmission['target_id'])) $data['is_active']=0;
+}
 $auditBefore = null;
 if ($productId) {
     $stmt = $pdo->prepare('SELECT price,stock FROM products WHERE id=? FOR UPDATE');
@@ -123,6 +144,7 @@ if ($productId) {
     updateProduct($pdo, $productId, $data);
 } else {
     $productId = createProduct($pdo, $data);
+    if ($staffProduct) $pdo->prepare('INSERT INTO product_submissions (product_id,author_id) VALUES (?,?)')->execute([$productId,$_SESSION['user_id']]);
 }
 
 $pdo->prepare('DELETE FROM product_images WHERE product_id = ?')->execute([$productId]);
@@ -136,18 +158,25 @@ foreach (($_POST['option_groups'] ?? []) as $group) {
     $groups[] = ['name' => $group['name'] ?? '', 'values' => $group['values'] ?? []];
 }
 replaceOptionGroups($pdo, $productId, $groups);
+if ($staffProduct) {
+    $pdo->prepare('UPDATE product_submissions SET status=?,version=version+1 WHERE product_id=?')->execute([$submitForReview?'pending':'draft',$productId]);
+    auditAdmin($pdo,$submitForReview?'product.submitted':'product.draft','product',$productId);
+} elseif ($submission) {
+    $pdo->prepare('UPDATE product_submissions SET version=version+1 WHERE product_id=?')->execute([$productId]);
+}
 auditAdmin($pdo, $existing ? 'product.updated' : 'product.created', 'product', $productId, ['before'=>$auditBefore, 'after'=>['price'=>$data['price'],'stock'=>$data['stock']]]);
 $pdo->commit();
 $uploadsCommitted = true;
 } catch (Throwable $error) {
     if ($pdo->inTransaction()) $pdo->rollBack();
     error_log('Product save failed: ' . $error->getMessage());
-    setFlash('error', 'Unable to save this product. Please try again.');
-    header('Location: ' . BASE_URL . '/pages/admin/products.php');
+    setFlash('error', $error instanceof RuntimeException && !($error instanceof PDOException) ? $error->getMessage() : 'Unable to save this product. Please try again.');
+    header('Location: ' . BASE_URL . '/pages/admin/' . $productReturnPage);
     exit;
 }
 
 foreach ($removedImages as $filename) removeUnreferencedProductUpload($pdo, $filename);
 setFlash('success', $uploadedImages && !function_exists('imagewebp') ? 'Product saved. Automatic optimization requires GD/WebP on the server; original photos are available.' : 'Product saved.');
-header('Location: ' . BASE_URL . '/pages/admin/products.php');
+if ($staffProduct) setFlash('success',$submitForReview?'Product submitted for admin approval.':'Draft saved. It is hidden from the store.');
+header('Location: ' . BASE_URL . '/pages/admin/' . $productReturnPage);
 exit;

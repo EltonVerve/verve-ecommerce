@@ -12,6 +12,12 @@ if (($argv[1] ?? '') === 'worker') {
 function assertOperation(bool $ok, string $message): void { if (!$ok) throw new RuntimeException($message); }
 $ids = []; $product = null;
 try {
+    try {
+        createOrderFromCart($pdo, null, [], '', 'cash_on_delivery');
+        throw new LogicException('Guest checkout was accepted');
+    } catch (RuntimeException $expected) {
+        assertOperation(str_contains($expected->getMessage(), 'sign in'), 'Guest checkout must fail before processing the cart');
+    }
     $zone = deliveryZones($pdo)[0] ?? null;
     assertOperation($zone !== null, 'Configure a delivery zone');
     $category = $pdo->query('SELECT id FROM categories LIMIT 1')->fetchColumn();

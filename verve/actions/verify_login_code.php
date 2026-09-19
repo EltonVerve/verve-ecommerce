@@ -19,5 +19,5 @@ $_SESSION['user_role'] = 'customer';
 $_SESSION['password_fingerprint'] = hash('sha256', $user['password_hash']);
 unset($_SESSION['login_challenge'], $_SESSION['login_email'], $_SESSION['login_code_sent_at'], $_SESSION['csrf_token']);
 rememberCustomer($pdo, $user);
-header('Location: ' . BASE_URL . '/pages/account.php');
+header('Location: ' . customerLoginDestination());
 exit;

@@ -25,6 +25,11 @@ function requireLogin(): void {
         exit;
     }
 }
+function customerLoginDestination(): string {
+    $checkout = !empty($_SESSION['checkout_after_login']);
+    unset($_SESSION['checkout_after_login']);
+    return BASE_URL . ($checkout ? '/pages/checkout.php' : '/pages/account.php');
+}
 
 // Same idea, but for the admin section. Blocks both guests AND
 // logged-in customers — only role='admin' accounts get through.

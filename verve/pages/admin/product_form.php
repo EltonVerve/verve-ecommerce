@@ -4,6 +4,10 @@ requireAdmin();
 
 $productId = !empty($_GET['id']) ? (int) $_GET['id'] : null;
 $product = $productId ? getProductById($pdo, $productId) : null;
+$staffProduct=adminScope($pdo)!=='owner';
+$submission=$productId ? productSubmission($pdo,$productId) : null;
+try { if ($productId) assertSubmissionEditable($pdo,$submission); }
+catch (RuntimeException $e) { http_response_code(403); exit(h($e->getMessage())); }
 if ($productId && !$product) {
     setFlash('error', 'That product could not be found.');
     header('Location: ' . BASE_URL . '/pages/admin/products.php');
@@ -21,11 +25,15 @@ require __DIR__ . '/../../includes/admin/admin_flash.php';
 
 <div class="admin-topbar">
   <h1><?= $product ? 'Edit product' : 'New product' ?></h1>
-  <a href="<?= BASE_URL ?>/pages/admin/products.php" class="btn btn-outline btn-sm">← Back to products</a>
+  <a href="<?= BASE_URL ?>/pages/admin/<?= $staffProduct ? 'product_submissions.php' : 'products.php' ?>" class="btn btn-outline btn-sm">Back to products</a>
 </div>
 
 <form action="<?= BASE_URL ?>/actions/admin/save_product.php" method="post" enctype="multipart/form-data" class="admin-card">
   <?= csrfField() ?>
+  <?php if ($submission): ?><input type="hidden" name="submission_version" value="<?= (int)$submission['version'] ?>"><?php endif; ?>
+  <?php if ($staffProduct): ?><p class="hint">Save a draft or submit it for admin review. Only an admin can publish products.</p><?php endif; ?>
+  <?php if (!empty($submission['review_note'])): ?><p><strong>Admin feedback:</strong> <?= h($submission['review_note']) ?></p><?php endif; ?>
+  <?php if (!empty($submission['target_id'])): ?><p class="hint">This is a revision. The published product stays unchanged until approval. Its current stock is preserved; inventory changes are handled by the admin.</p><?php endif; ?>
   <?php if ($product): ?><input type="hidden" name="product_id" value="<?= (int) $product['id'] ?>"><?php endif; ?>
 
   <div class="form-grid">
@@ -72,10 +80,10 @@ require __DIR__ . '/../../includes/admin/admin_flash.php';
   </div>
 
   <div class="field">
-    <label><input type="checkbox" name="is_featured" value="1" <?= !empty($product['is_featured']) ? 'checked' : '' ?> style="width:auto; margin-right:.4rem;"> Feature on homepage</label>
+    <?php if (!$staffProduct): ?><label><input type="checkbox" name="is_featured" value="1" <?= !empty($product['is_featured']) ? 'checked' : '' ?> style="width:auto; margin-right:.4rem;"> Feature on homepage</label><?php endif; ?>
   </div>
   <div class="field">
-    <label><input type="checkbox" name="is_active" value="1" <?= ($product['is_active'] ?? 1) ? 'checked' : '' ?> style="width:auto; margin-right:.4rem;"> Visible in store</label>
+    <?php if (!$staffProduct && (!$submission || ($submission['status']==='approved' && !$submission['target_id']))): ?><label><input type="checkbox" name="is_active" value="1" <?= ($product['is_active'] ?? 1) ? 'checked' : '' ?> style="width:auto; margin-right:.4rem;"> Visible in store</label><?php endif; ?>
   </div>
 
   <div class="field">
@@ -121,7 +129,7 @@ require __DIR__ . '/../../includes/admin/admin_flash.php';
   <button type="button" class="btn btn-outline btn-sm" id="addGroup">+ Add variant group</button>
 
   <div style="margin-top:2rem;">
-    <button type="submit" class="btn btn-primary">Save product</button>
+    <?php if ($staffProduct): ?><button type="submit" name="workflow" value="draft" class="btn btn-outline">Save draft</button> <button type="submit" name="workflow" value="submit" class="btn btn-primary">Submit for approval</button><?php else: ?><button type="submit" class="btn btn-primary">Save product</button><?php endif; ?>
   </div>
 </form>
 

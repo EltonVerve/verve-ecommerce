@@ -17,7 +17,6 @@ verifyCsrf();
 $email = is_string($_POST['email'] ?? null) ? trim(strtolower($_POST['email'])) : '';
 $password = is_string($_POST['password'] ?? null) ? $_POST['password'] : '';
 $_SESSION['login_prefill_email'] = $email;
-$redirect = BASE_URL . '/pages/account.php';
 
 limitAuthRequests($pdo, 'login', $email);
 $user = attemptLogin($pdo, $email, $password);
@@ -45,5 +44,5 @@ rememberCustomer($pdo, $user);
 unset($_SESSION['login_prefill_email'], $_SESSION['csrf_token']);
 
 setFlash('success', 'Welcome back, ' . $user['full_name'] . '.');
-header('Location: ' . $redirect);
+header('Location: ' . customerLoginDestination());
 exit;

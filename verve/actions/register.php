@@ -47,5 +47,5 @@ session_regenerate_id(true);
 rememberCustomer($pdo, findUserById($pdo, $userId));
 
 setFlash('success', 'Welcome to ' . SITE_NAME . ', ' . $fullName . '!');
-header('Location: ' . BASE_URL . '/pages/account.php');
+header('Location: ' . customerLoginDestination());
 exit;

@@ -15,6 +15,11 @@ try {
     deleteProduct($pdo, $id);
     if ($before) auditAdmin($pdo,'product.deleted','product',$id,['before'=>$before]);
     $pdo->commit();
+} catch (PDOException $e) {
+    $pdo->rollBack();
+    if ($e->getCode() !== '23000') throw $e;
+    setFlash('error','This product has linked records or revisions. Make it inactive instead of deleting it.');
+    header('Location: ' . BASE_URL . '/pages/admin/products.php'); exit;
 } catch (Throwable $e) { $pdo->rollBack(); throw $e; }
 
 setFlash('success', 'Product deleted.');

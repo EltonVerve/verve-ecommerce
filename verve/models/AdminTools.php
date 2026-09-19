@@ -44,7 +44,8 @@ function changeStaffAccess(PDO $pdo, string $email, string $scope): void {
 }
 function adminRouteAllowed(string $scope, string $route): bool {
     if ($scope === 'owner') return true;
-    return $scope === 'orders' && in_array($route,['orders.php','order_detail.php','order_print.php','order_note.php','update_order_status.php','dispatch.php','profile.php','update_profile.php','logout.php'],true);
+    if ($scope==='orders' && $route==='product_submission.php') return true;
+    return $scope === 'orders' && in_array($route,['product_submissions.php','product_form.php','save_product.php','product_revision.php','orders.php','order_detail.php','order_print.php','order_note.php','update_order_status.php','dispatch.php','profile.php','update_profile.php','logout.php'],true);
 }
 function addOrderStaffNote(PDO $pdo, int $orderId, string $note, string $requestKey): void {
     $note = trim($note);

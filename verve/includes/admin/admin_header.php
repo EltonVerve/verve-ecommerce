@@ -29,13 +29,19 @@ $staffScope = adminScope($pdo);
       <nav aria-label="Admin navigation">
         <?php if ($staffScope === 'owner'): ?>
         <a href="<?= BASE_URL ?>/pages/admin/dashboard.php" class="<?= $adminCurrentPage === 'dashboard.php' ? 'active' : '' ?>">Dashboard</a>
+        <?php else: ?>
+        <a href="<?= BASE_URL ?>/pages/admin/orders.php" class="<?= in_array($adminCurrentPage, ['orders.php', 'order_detail.php'], true) ? 'active' : '' ?>">Dashboard</a>
+        <?php endif; ?>
+        <?php $pendingProducts=$staffScope==='owner'?(int)$pdo->query("SELECT COUNT(*) FROM product_submissions WHERE status='pending'")->fetchColumn():0; ?>
+        <a href="<?= BASE_URL ?>/pages/admin/product_submissions.php" class="<?= in_array($adminCurrentPage,['product_submissions.php','product_submission.php'],true)?'active':'' ?>"><?= $staffScope==='owner'?'Product approvals ('.$pendingProducts.')':'My submissions' ?></a>
+        <?php if ($staffScope === 'owner'): ?>
         <a href="<?= BASE_URL ?>/pages/admin/products.php" class="<?= in_array($adminCurrentPage, ['products.php', 'product_form.php'], true) ? 'active' : '' ?>">Products</a>
         <a href="<?= BASE_URL ?>/pages/admin/categories.php" class="<?= $adminCurrentPage === 'categories.php' ? 'active' : '' ?>">Categories</a>
         <a href="<?= BASE_URL ?>/pages/admin/coupons.php" class="<?= $adminCurrentPage === 'coupons.php' ? 'active' : '' ?>">Coupons</a>
         <a href="<?= BASE_URL ?>/pages/admin/stock.php" class="<?= $adminCurrentPage === 'stock.php' ? 'active' : '' ?>">Low stock</a>
         <?php endif; ?>
-        <a href="<?= BASE_URL ?>/pages/admin/orders.php" class="<?= in_array($adminCurrentPage, ['orders.php', 'order_detail.php'], true) ? 'active' : '' ?>">Orders</a>
         <?php if ($staffScope === 'owner'): ?>
+        <a href="<?= BASE_URL ?>/pages/admin/orders.php" class="<?= in_array($adminCurrentPage, ['orders.php', 'order_detail.php'], true) ? 'active' : '' ?>">Orders</a>
         <a href="<?= BASE_URL ?>/pages/admin/messages.php" class="<?= in_array($adminCurrentPage, ['messages.php', 'message_detail.php'], true) ? 'active' : '' ?>">Messages</a>
         <a href="<?= BASE_URL ?>/pages/admin/customers.php" class="<?= in_array($adminCurrentPage, ['customers.php', 'customer_detail.php'], true) ? 'active' : '' ?>">Customers</a>
         <a href="<?= BASE_URL ?>/pages/admin/reports.php" class="<?= $adminCurrentPage === 'reports.php' ? 'active' : '' ?>">Reports</a>

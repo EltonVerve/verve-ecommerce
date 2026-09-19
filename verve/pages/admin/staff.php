@@ -15,7 +15,7 @@ $staff=$pdo->query("SELECT id,full_name,email,admin_scope FROM users WHERE role=
 $pageTitle='Staff access'; require __DIR__.'/../../includes/admin/admin_header.php'; require __DIR__.'/../../includes/admin/admin_flash.php';
 ?>
 <div class="admin-topbar"><h1>Staff access</h1></div>
-<div class="admin-card"><h2>Who can access admin</h2><p class="hint">Owners have full access. Order staff can view orders, save delivery/payment collection statuses, assign riders and manage their own profile. Refunds, returns, products, reports and access settings are owner-only.</p>
+<div class="admin-card"><h2>Who can access admin</h2><p class="hint">Owners have full access. Order staff can handle orders, assign riders, create product drafts with photos and submit them for approval. Staff can revise their own approved products through review. Publishing, refunds, returns, reports and access settings are owner-only.</p>
 <table class="admin-table"><thead><tr><th>Name</th><th>Email</th><th>Access</th></tr></thead><tbody><?php foreach ($staff as $member): ?><tr><td><?= h($member['full_name']) ?><?= (int)$member['id']===(int)$_SESSION['user_id']?' (you)':'' ?></td><td><?= h($member['email']) ?></td><td><?= $member['admin_scope']==='owner'?'Owner':'Order staff' ?></td></tr><?php endforeach; ?></tbody></table></div>
 <form method="post" class="admin-card"><?= csrfField() ?><h2>Grant or change access</h2><p class="hint">Use an existing account email. Your own access cannot be changed here.</p><div class="form-grid">
 <div class="field"><label for="staff-email">Account email</label><input type="email" id="staff-email" name="email" required maxlength="190"></div>

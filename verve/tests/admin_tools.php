@@ -15,7 +15,7 @@ try {
     $_SESSION['user_id']=$ids['staff'];
     rejectsTools(fn()=>changeStaffAccess($pdo,'customer'.$tag.'@example.test','owner'));
     checkTools(adminScope($pdo)==='orders','Scope loaded from database');
-    foreach (['staff.php','record_return.php','record_refund.php','save_product.php','delivery.php','audit.php','dashboard.php'] as $route) checkTools(!adminRouteAllowed('orders',$route),'Staff denied '.$route);
+    foreach (['staff.php','record_return.php','record_refund.php','review_product.php','toggle_product.php','delivery.php','audit.php','dashboard.php'] as $route) checkTools(!adminRouteAllowed('orders',$route),'Staff denied '.$route);
     checkTools(adminRouteAllowed('orders','dispatch.php') && adminRouteAllowed('orders','orders.php'),'Order staff allowed operations');
     checkTools(!adminRouteAllowed('none','orders.php'),'Customer denied');
     $_SESSION['user_id']=$ids['owner'];
