@@ -6,3 +6,5 @@ a { color: #087f78; } table { width: 100%; border-collapse: collapse; margin: 2r
 th, td { padding: .7rem; text-align: left; border-bottom: 1px solid #dce6f0; overflow-wrap: anywhere; }
 th { background: #f3f7fc; } footer { margin-top: 3rem; } p { overflow-wrap: anywhere; }
 @media print { @page { margin: 15mm; } body { max-width: none; margin: 0; padding: 0; color: black; } .print-actions { display: none; } tr, section, footer { break-inside: avoid; } thead { display: table-header-group; } }
+
+.print-brand svg { width: 224px; height: 48px; }

@@ -1,5 +1,5 @@
 /* =========================================================
-   VERVE — main.js
+   RADA CART — main.js
    Mobile nav toggle, live header search suggestions, quantity
    steppers, product gallery thumbnails, wishlist toggling and
    a small toast helper used after add-to-cart actions.
@@ -137,10 +137,10 @@
 
   /* ---------- Toast helper ---------- */
   window.showToast = function (message) {
-    let toast = document.getElementById("verveToast");
+    let toast = document.getElementById("radaToast");
     if (!toast) {
       toast = document.createElement("div");
-      toast.id = "verveToast";
+      toast.id = "radaToast";
       toast.style.cssText =
         "position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(10px);" +
         "background:#1C1A17;color:#fff;font-size:14px;font-weight:600;padding:.8rem 1.4rem;" +

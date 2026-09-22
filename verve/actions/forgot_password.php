@@ -24,7 +24,7 @@ unset($_SESSION['demo_reset_link']);
 if ($user && getenv('VERVE_MAIL_FROM') && filter_var(getenv('VERVE_MAIL_FROM'), FILTER_VALIDATE_EMAIL)) {
     $token = createResetToken($pdo, (int) $user['id']);
     $resetLink = BASE_URL . '/pages/reset_password.php?token=' . $token;
-    if (!mail($user['email'], 'Reset your Verve password', "Use this link within 30 minutes:\n" . $resetLink, 'From: ' . getenv('VERVE_MAIL_FROM'))) {
+    if (!mail($user['email'], 'Reset your ' . SITE_NAME . ' password', "Use this link within 30 minutes:\n" . $resetLink, 'From: ' . getenv('VERVE_MAIL_FROM'))) {
         error_log('Password reset email delivery failed.');
     }
 }

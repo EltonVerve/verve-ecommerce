@@ -1,5 +1,5 @@
 -- =========================================================
--- VERVE — Database Schema
+-- RADA CART — Database Schema
 -- A general-purpose e-commerce store (electronics, fashion,
 -- home goods, anything you sell — not print-specific).
 -- =========================================================

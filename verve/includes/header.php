@@ -29,6 +29,7 @@ $headerCustomer = isCustomerLoggedIn();
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="<?= BASE_URL ?>/public/assets/css/style.css?v=<?= (int) filemtime(__DIR__ . '/../public/assets/css/style.css') ?>">
+<link rel="icon" type="image/svg+xml" href="<?= BASE_URL ?>/public/assets/brand/rada-cart-icon.svg">
 </head>
 <body>
 
@@ -42,7 +43,7 @@ $headerCustomer = isCustomerLoggedIn();
   </div>
 </div>
 
-<header id="siteHeader" class="site-header verve-navigation">
+<header id="siteHeader" class="site-header rada-navigation">
   <div class="shell header-row">
     <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="mobileNav" aria-label="Open menu">
       <span></span><span></span><span></span>
@@ -50,7 +51,7 @@ $headerCustomer = isCustomerLoggedIn();
 
     <a href="<?= BASE_URL ?>/index.php" class="brand" aria-label="<?= h(SITE_NAME) ?> home">
       <?php require __DIR__ . '/brand-logo.php'; ?>
-      <span class="brand-caption">THE EVERYDAY EDIT</span>
+      <span class="brand-caption">GREAT FINDS. ON YOUR RADAR.</span>
     </a>
 
     <nav class="main-nav" aria-label="Primary">

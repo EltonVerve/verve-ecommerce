@@ -1,4 +1,13 @@
-# Verve — a general-purpose e-commerce store
+# Rada Cart — a general-purpose e-commerce store
+
+Brand tagline: **Great finds. On your radar.** The custom cart-and-radar logo lives in
+`public/assets/brand/rada-cart-logo.svg`; the matching favicon is
+`public/assets/brand/rada-cart-icon.svg`. The shared logo include serves the
+storefront, admin and packing slips. Both assets are scalable SVGs.
+
+Existing `verve` installation paths, database names, `VERVE_*` environment
+variables, session cookies and demo credentials are retained for compatibility.
+Rebranding does not require a database migration or changing existing accounts.
 
 A full online store built in plain PHP + MySQL (no framework), covering everything a real
 shop needs: a browsable catalogue with filters, product variants (size/colour/etc.),

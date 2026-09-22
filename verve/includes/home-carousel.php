@@ -6,7 +6,7 @@ $heroSlides = [
 ];
 ?>
 <div class="shell carousel-shell">
-  <section class="verve-carousel" aria-label="Featured collections" aria-roledescription="carousel" data-carousel>
+  <section class="rada-carousel" aria-label="Featured collections" aria-roledescription="carousel" data-carousel>
     <div class="carousel-slides">
       <?php foreach ($heroSlides as $index => $slide): ?>
         <div class="carousel-slide carousel-<?= h($slide[8]) ?>" role="group" aria-roledescription="slide" aria-label="<?= $index + 1 ?> of <?= count($heroSlides) ?>: <?= h($slide[0]) ?>" <?= $index ? 'hidden' : '' ?>>

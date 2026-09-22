@@ -7,8 +7,8 @@
  * ---------------------------------------------------------
  */
 
-define('SITE_NAME', 'Verve');
-define('SITE_TAGLINE', 'Everyday things, well made.');
+define('SITE_NAME', 'Rada Cart');
+define('SITE_TAGLINE', 'Great finds. On your radar.');
 define('CURRENCY', 'KES');
 define('STORE_CURRENCY_SYMBOL', 'KSh ');
 

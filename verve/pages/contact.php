@@ -11,7 +11,7 @@ require __DIR__ . '/../includes/flash.php';
 
 <section class="contact-studio">
   <div class="shell contact-welcome">
-    <span class="nav-eyebrow">THE VERVE HELP DESK</span>
+    <span class="nav-eyebrow">THE RADA CART HELP DESK</span>
     <h1>A question? An idea?<br><em>Let’s talk.</em></h1>
     <p>From finding your next favourite to sorting out an order, you’re in the right place.</p>
   </div>
@@ -67,7 +67,7 @@ require __DIR__ . '/../includes/flash.php';
         <label for="message">Message *</label>
         <textarea id="message" name="message" rows="6" minlength="10" maxlength="5000" required placeholder="Tell us a little about what you need help with..."></textarea>
       </div>
-      <div class="contact-submit-row"><p>Your message goes to the Verve support team.</p><button type="submit" class="btn btn-primary">Send message <span aria-hidden="true">&nearr;</span></button></div>
+      <div class="contact-submit-row"><p>Your message goes to the Rada Cart support team.</p><button type="submit" class="btn btn-primary">Send message <span aria-hidden="true">&nearr;</span></button></div>
     </form>
   </div>
 </div>

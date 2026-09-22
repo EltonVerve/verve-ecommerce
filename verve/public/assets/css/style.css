@@ -1,5 +1,5 @@
 /* =========================================================
-   VERVE — STOREFRONT DESIGN SYSTEM
+   RADA CART — STOREFRONT DESIGN SYSTEM
    A warm, modern general-store look: cream backgrounds, a
    serif display face for headings, plenty of white space,
    and one confident accent colour used sparingly.
@@ -206,7 +206,7 @@ textarea { resize: vertical; min-height: 110px; }
 }
 .hero-art img { width: 100%; height: 100%; object-fit: cover; }
 .carousel-shell { padding-top: 1.25rem; }
-.verve-carousel { border-radius: 26px; overflow: hidden; background: #EAF2FB; border: 1px solid var(--line); }
+.rada-carousel { border-radius: 26px; overflow: hidden; background: #EAF2FB; border: 1px solid var(--line); }
 .carousel-slide { position: relative; min-height: 430px; isolation: isolate; display: flex; align-items: center; }
 .carousel-slide:not([hidden]) { animation: carousel-reveal .7s ease-out both; }
 .carousel-slide:not([hidden]) .carousel-photo { animation: carousel-photo-settle 1.2s ease-out both; }
@@ -247,7 +247,7 @@ textarea { resize: vertical; min-height: 110px; }
 .carousel-dots button::after { content: ''; display: block; height: 7px; width: 7px; border-radius: 999px; margin: auto; background: #b7aec9; }
 .carousel-dots button[aria-current]::after { width: 26px; background: var(--accent); }
 .carousel-pause { justify-self: end; min-height: 44px; border: 0; background: transparent; color: var(--ink-soft); font-size: .72rem; }
-.verve-carousel button:focus-visible, .verve-carousel a:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
+.rada-carousel button:focus-visible, .rada-carousel a:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
 .carousel-status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 @media (max-width: 700px) {
   .carousel-copy { width: 100%; padding: 2rem 1.4rem 13rem; }
@@ -777,22 +777,22 @@ textarea { resize: vertical; min-height: 110px; }
 .footer-bottom { display: flex; justify-content: space-between; padding-top: 1.6rem; border-top: 1px solid rgba(23,59,92,.14); font-size: .8rem; color: #4E6781; flex-wrap: wrap; gap: .6rem; }
 .footer-bottom a:hover { color: #0D2440; }
 
-/* Verve navigation: warm masthead, ink rail, photographic category directory. */
-.verve-navigation { background: rgba(255,255,255,.97); border-bottom: 1px solid var(--line); box-shadow: 0 8px 28px rgba(28,26,23,.045); }
-.verve-navigation .header-row { position: relative; gap: 1rem 3rem; padding-top: 1.15rem; padding-bottom: .7rem; }
-.verve-navigation .brand { flex-direction: column; align-items: flex-start; gap: .3rem; }
-.verve-navigation .brand svg { height: 43px; }
+/* Rada Cart navigation: warm masthead, ink rail, photographic category directory. */
+.rada-navigation { background: rgba(255,255,255,.97); border-bottom: 1px solid var(--line); box-shadow: 0 8px 28px rgba(28,26,23,.045); }
+.rada-navigation .header-row { position: relative; gap: 1rem 3rem; padding-top: 1.15rem; padding-bottom: .7rem; }
+.rada-navigation .brand { flex-direction: column; align-items: flex-start; gap: .3rem; }
+.rada-navigation .brand svg { height: 43px; }
 .brand-caption { font-size: .56rem; font-weight: 700; letter-spacing: .19em; color: var(--accent-dark); white-space: nowrap; }
-.verve-navigation .header-search { width: min(100%, 580px); }
-.verve-navigation .header-search input { min-height: 48px; border-radius: 999px; background: var(--cream); border-color: var(--line); padding-left: 1.2rem; }
-.verve-navigation .header-search input:focus { background: var(--paper); border-color: var(--accent); }
-.verve-navigation .header-search button { width: 38px; height: 38px; justify-content: center; align-items: center; right: 5px; border-radius: 50%; color: var(--ink); background: transparent; }
-.verve-navigation .cart-link { border-radius: 999px; min-height: 48px; padding-inline: 1rem; background: var(--accent); box-shadow: none; }
-.verve-navigation .cart-link:hover { background: var(--accent-dark); }
-.verve-navigation .header-actions > .icon-link:not(.cart-link) { width: 48px; height: 48px; background: transparent; border-radius: 8px; }
-.verve-navigation .main-nav { position: static; flex-wrap: nowrap; gap: 1rem; background: transparent; color: var(--ink); border: 0; border-top: 1px solid var(--line-soft); border-radius: 0; padding: .7rem 0 0; min-height: 54px; }
-.verve-navigation .main-nav > a { color: var(--ink-soft); border-radius: 0; padding: .6rem .7rem; font-size: .82rem; border-bottom: 2px solid transparent; }
-.verve-navigation .main-nav > a:hover, .verve-navigation .main-nav > a[aria-current="page"] { background: transparent; color: var(--accent-dark); border-bottom-color: var(--accent); }
+.rada-navigation .header-search { width: min(100%, 580px); }
+.rada-navigation .header-search input { min-height: 48px; border-radius: 999px; background: var(--cream); border-color: var(--line); padding-left: 1.2rem; }
+.rada-navigation .header-search input:focus { background: var(--paper); border-color: var(--accent); }
+.rada-navigation .header-search button { width: 38px; height: 38px; justify-content: center; align-items: center; right: 5px; border-radius: 50%; color: var(--ink); background: transparent; }
+.rada-navigation .cart-link { border-radius: 999px; min-height: 48px; padding-inline: 1rem; background: var(--accent); box-shadow: none; }
+.rada-navigation .cart-link:hover { background: var(--accent-dark); }
+.rada-navigation .header-actions > .icon-link:not(.cart-link) { width: 48px; height: 48px; background: transparent; border-radius: 8px; }
+.rada-navigation .main-nav { position: static; flex-wrap: nowrap; gap: 1rem; background: transparent; color: var(--ink); border: 0; border-top: 1px solid var(--line-soft); border-radius: 0; padding: .7rem 0 0; min-height: 54px; }
+.rada-navigation .main-nav > a { color: var(--ink-soft); border-radius: 0; padding: .6rem .7rem; font-size: .82rem; border-bottom: 2px solid transparent; }
+.rada-navigation .main-nav > a:hover, .rada-navigation .main-nav > a[aria-current="page"] { background: transparent; color: var(--accent-dark); border-bottom-color: var(--accent); }
 .nav-new-dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: #D9F76C; vertical-align: middle; margin-left: .35rem; }
 .category-menu { align-self: stretch; }
 .category-menu summary { list-style: none; display: flex; align-items: center; gap: .65rem; height: 100%; padding: .8rem 1.35rem; border-radius: 999px; background: var(--accent); color: #fff; cursor: pointer; font-size: .82rem; }
@@ -806,30 +806,30 @@ textarea { resize: vertical; min-height: 110px; }
 .category-mega-intro { background: var(--accent-soft); padding: 2rem; }
 .nav-eyebrow { display: block; color: var(--accent-dark); font-size: .62rem; font-weight: 700; letter-spacing: .15em; margin-bottom: 1rem; }
 .category-mega-intro h2 { font-size: 1.9rem; font-weight: 500; line-height: 1.2; margin-bottom: 1.5rem; }
-.verve-navigation .category-mega-intro a { padding: 0; white-space: normal; border-radius: 0; font-size: .78rem; color: var(--accent-dark); }
+.rada-navigation .category-mega-intro a { padding: 0; white-space: normal; border-radius: 0; font-size: .78rem; color: var(--accent-dark); }
 .category-mega-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .6rem; padding: 1.25rem; }
-.verve-navigation .category-mega-grid a { display: flex; flex-direction: column; align-items: flex-start; gap: .65rem; padding: .5rem; margin: 0; border-radius: 10px; white-space: normal; font-size: .76rem; }
+.rada-navigation .category-mega-grid a { display: flex; flex-direction: column; align-items: flex-start; gap: .65rem; padding: .5rem; margin: 0; border-radius: 10px; white-space: normal; font-size: .76rem; }
 .category-mega-grid img { width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
 .category-mega-grid a > span:last-child { display: none; }
 @media (max-width: 980px) {
-  .verve-navigation .header-row { gap: .8rem; padding: .85rem 1.5rem; }
-  .verve-navigation .main-nav { display: none; }
-  .verve-navigation .brand { justify-self: start; }
-  .verve-navigation .brand svg { height: 36px; }
-  .verve-navigation .header-search { display: flex; grid-column: 1 / -1; grid-row: 2; width: 100%; }
-  .verve-navigation .mobile-search { display: none; }
-  .verve-navigation .mobile-nav { max-height: calc(100dvh - 185px); padding: 1.25rem; border-top: 3px solid var(--accent); border-radius: 0 0 16px 16px; }
-  .verve-navigation .nav-toggle { background: var(--ink); border: 0; border-radius: 8px; }
-  .verve-navigation .nav-toggle span { background: var(--cream); }
+  .rada-navigation .header-row { gap: .8rem; padding: .85rem 1.5rem; }
+  .rada-navigation .main-nav { display: none; }
+  .rada-navigation .brand { justify-self: start; }
+  .rada-navigation .brand svg { height: 36px; }
+  .rada-navigation .header-search { display: flex; grid-column: 1 / -1; grid-row: 2; width: 100%; }
+  .rada-navigation .mobile-search { display: none; }
+  .rada-navigation .mobile-nav { max-height: calc(100dvh - 185px); padding: 1.25rem; border-top: 3px solid var(--accent); border-radius: 0 0 16px 16px; }
+  .rada-navigation .nav-toggle { background: var(--ink); border: 0; border-radius: 8px; }
+  .rada-navigation .nav-toggle span { background: var(--cream); }
 }
 @media (max-width: 560px) {
   .announce-inner { font-size: .7rem; }
   .announce-inner > span:last-child, .announce-sep { display: none; }
-  .verve-navigation .header-row { padding: .75rem; gap: .75rem .55rem; }
-  .verve-navigation .brand svg { height: 30px; }
+  .rada-navigation .header-row { padding: .75rem; gap: .75rem .55rem; }
+  .rada-navigation .brand svg { height: 30px; }
   .brand-caption { font-size: .43rem; letter-spacing: .08em; }
-  .verve-navigation .header-actions { gap: .45rem; }
-  .verve-navigation .header-actions > .icon-link:not(.cart-link) { width: 36px; height: 44px; border: 0; }
-  .verve-navigation .cart-link { gap: .35rem; min-height: 44px; padding-inline: .65rem; font-size: .8rem; }
-  .verve-navigation .cart-link > svg { display: none; }
+  .rada-navigation .header-actions { gap: .45rem; }
+  .rada-navigation .header-actions > .icon-link:not(.cart-link) { width: 36px; height: 44px; border: 0; }
+  .rada-navigation .cart-link { gap: .35rem; min-height: 44px; padding-inline: .65rem; font-size: .8rem; }
+  .rada-navigation .cart-link > svg { display: none; }
 }

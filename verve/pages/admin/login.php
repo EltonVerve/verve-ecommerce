@@ -16,6 +16,7 @@ $pageTitle = 'Admin Login';
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="<?= BASE_URL ?>/public/assets/css/style.css">
 <link rel="stylesheet" href="<?= BASE_URL ?>/public/assets/css/admin.css?v=<?= (int) filemtime(__DIR__ . '/../../public/assets/css/admin.css') ?>">
+<link rel="icon" type="image/svg+xml" href="<?= BASE_URL ?>/public/assets/brand/rada-cart-icon.svg">
 </head>
 <body class="admin-body">
 <div class="login-shell">
